@@ -1,0 +1,9 @@
+# Business — NEVER commit
+business/
+
+# Claude ephemeral task file
+.claude/task.local.md
+
+# OS
+.DS_Store
+Thumbs.db

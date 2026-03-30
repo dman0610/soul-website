@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Edit(~/.claude/skills/algorithmic-art/**)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\dmanf\\.claude\\skills",
+      "c:\\Projects\\soul\\.claude"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash c:/Projects/soul/.claude/hooks/task-complete-check.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

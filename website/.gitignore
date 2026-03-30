@@ -1,0 +1,22 @@
+# Build output
+.next/
+out/
+
+# Dependencies
+node_modules/
+
+# Secrets — NEVER commit
+.env
+.env.local
+.env.*
+!.env.example
+
+# Screenshots
+temporary screenshots/
+
+# TypeScript
+tsconfig.tsbuildinfo
+
+# OS
+.DS_Store
+Thumbs.db
