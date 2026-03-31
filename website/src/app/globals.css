@@ -180,6 +180,13 @@
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+@keyframes chatSpark {
+  0%   { opacity: 0; }
+  15%  { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
 @keyframes soulOrbPulse {
   0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
   50%       { opacity: 1;   transform: translate(-50%, -50%) scale(1.15); }
@@ -232,15 +239,6 @@ canvas {
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55) !important;
 }
 
-/* ── Step connector line ─────────────────────────────── */
-.step-connector {
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(to right, rgba(196,98,10,0.4), rgba(196,98,10,0.15));
-  margin-top: -28px;
-  align-self: flex-start;
-}
-
 /* ── Chat message bubble ─────────────────────────────── */
 .chat-msg {
   animation: slideUp 300ms ease both;
@@ -253,13 +251,6 @@ canvas {
 .soul-cta-primary:hover {
   background: #e08820 !important;
   box-shadow: 0 0 30px rgba(196, 98, 10, 0.42) !important;
-}
-.soul-cta-ghost {
-  transition: background 200ms ease, border-color 200ms ease;
-}
-.soul-cta-ghost:hover {
-  background: rgba(196, 98, 10, 0.14) !important;
-  border-color: rgba(196, 98, 10, 0.48) !important;
 }
 .soul-link-muted {
   transition: color 150ms ease;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 const styles = `
@@ -1174,19 +1175,32 @@ function LogoStar() {
 }
 
 // ─── Chat Widget ──────────────────────────────────────────────────────────────
+const HELI_FAQ = [
+  { q: "How much do tours cost?", a: "From $349/person — 60-min Haleakalā Sunrise. Road to Hana is $425, Full Island Circuit is $499. Private charters quoted on request." },
+  { q: "How long are the flights?", a: "60 to 90 minutes depending on route. Add 30 minutes pre-flight. All depart from Kahului Airport (OGG)." },
+  { q: "Is there a weight limit?", a: "Yes — 300 lbs per passenger for safety and aircraft balance. This is an FAA requirement, verified at check-in." },
+  { q: "What if weather is bad?", a: "We monitor conditions hourly. If we can't fly safely, we reschedule for free or issue a full refund. Maui averages 300+ sunny days a year." },
+];
+
 function ChatWidget() {
   const [open, setOpen] = useState(false);
   const [pulsing, setPulsing] = useState(false);
+  const [mode, setMode] = useState<"live" | "faq">("faq");
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [messages, setMessages] = useState([
-    { type: "bot", text: "Aloha! I'm Leilani, your Maui Air Tours concierge. How can I help you today?" },
-    { type: "user", text: "How long are the tours?" },
-    { type: "bot", text: "Our routes range from 60 to 90 minutes. The Haleakalā Sunrise tour is our most popular — 60 minutes, departs at 6:15 AM. Want to check availability?" },
-    { type: "user", text: "Is there a weight limit?" },
-    { type: "bot", text: "Yes — for safety and balance, we require all passengers to be under 300 lbs. Weights are verified at check-in. Any other questions?" },
+    { type: "bot", text: "Aloha! I'm Leilani, your Maui Air Tours concierge. Ask me about routes, pricing, or how to reserve your flight." },
   ]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Check Botpress status on mount
+  useEffect(() => {
+    fetch("/api/chat/helicopter")
+      .then(r => r.json())
+      .then(d => { if (d.live) setMode("live"); })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -1197,10 +1211,10 @@ function ChatWidget() {
   }, []);
 
   useEffect(() => {
-    if (open && messagesEndRef.current) {
+    if (mode === "live" && messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [open, messages]);
+  }, [open, messages, mode]);
 
   async function handleSend() {
     const text = input.trim();
@@ -1217,7 +1231,7 @@ function ChatWidget() {
       const data = await res.json();
       setMessages(prev => [...prev, { type: "bot", text: data.reply ?? "Let me check on that — feel free to call us at (808) 555-0192." }]);
     } catch {
-      setMessages(prev => [...prev, { type: "bot", text: "Something went wrong. Call us at (808) 555-0192 and we'll sort you out." }]);
+      setMode("faq");
     } finally {
       setIsLoading(false);
     }
@@ -1225,7 +1239,6 @@ function ChatWidget() {
 
   return (
     <>
-      {/* Botpress Embed Placeholder */}
       {/* ═══════════════════════════════════════════════════ */}
       {/* BOTPRESS EMBED — add real snippet after Botpress setup */}
       {/* <script src="https://cdn.botpress.cloud/webchat/v2/inject.js"></script> */}
@@ -1233,63 +1246,124 @@ function ChatWidget() {
       {/* ═══════════════════════════════════════════════════ */}
 
       {open && (
-        <div className="chat-panel">
+        <div className="chat-panel" style={{ animation: "chatSlideIn 300ms ease both" }}>
           <div className="chat-header">
             <div className="chat-avatar">
               <CompassIcon />
             </div>
             <div className="chat-header-info">
               <div className="chat-bot-name">Leilani</div>
-              <div className="chat-bot-status">Online now</div>
+              <div className="chat-bot-status" style={{ color: mode === "live" ? "#4ade80" : "var(--muted)" }}>
+                {mode === "live" ? "Online now" : "Setting up — quick answers below"}
+              </div>
             </div>
             <button className="chat-close" onClick={() => setOpen(false)} aria-label="Close chat">✕</button>
           </div>
-          <div className="chat-messages">
-            {messages.map((msg, i) => (
-              <div key={i} className={`msg msg-${msg.type}`}>
-                {msg.type === "bot" && <span className="msg-label">Leilani</span>}
-                <div className="msg-bubble">{msg.text}</div>
-              </div>
-            ))}
-            {isLoading && (
-              <div className="msg msg-bot">
-                <span className="msg-label">Leilani</span>
-                <div className="msg-bubble" style={{ display: "flex", gap: "4px", alignItems: "center" }}>
-                  {[0, 160, 320].map(delay => (
-                    <span key={delay} style={{
-                      width: "5px", height: "5px", borderRadius: "50%",
-                      background: "var(--muted)", display: "inline-block",
-                      animation: `fadeIn 600ms ease ${delay}ms infinite alternate`,
-                    }} />
-                  ))}
+
+          {/* FAQ Mode */}
+          {mode === "faq" && (
+            <div style={{
+              flex: 1, overflowY: "auto" as const, padding: "16px",
+              display: "flex", flexDirection: "column" as const, gap: "8px", maxHeight: "400px",
+              scrollbarWidth: "thin" as const,
+            }}>
+              <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "13px", color: "var(--muted)", margin: "0 0 6px", lineHeight: 1.5 }}>
+                Our AI assistant is getting set up. Quick answers:
+              </p>
+              {HELI_FAQ.map((item, i) => (
+                <div key={i} style={{
+                  background: "rgba(255,255,255,0.04)",
+                  border: expandedFaq === i ? "1px solid rgba(224,136,32,0.4)" : "1px solid rgba(255,255,255,0.08)",
+                  borderRadius: "10px", overflow: "hidden", transition: "border-color 150ms ease",
+                }}>
+                  <button onClick={() => setExpandedFaq(expandedFaq === i ? null : i)} style={{
+                    width: "100%", textAlign: "left" as const, background: "none", border: "none",
+                    padding: "11px 14px", cursor: "pointer",
+                    display: "flex", justifyContent: "space-between", alignItems: "center", gap: "8px",
+                    WebkitTapHighlightColor: "transparent",
+                  }}>
+                    <span style={{ fontFamily: "var(--font-dm-sans)", fontSize: "13px", color: "var(--white)", fontWeight: 500, lineHeight: 1.4 }}>{item.q}</span>
+                    <svg width="13" height="13" fill="none" stroke="var(--muted)" viewBox="0 0 24 24" style={{ flexShrink: 0, transform: expandedFaq === i ? "rotate(180deg)" : "rotate(0)", transition: "transform 200ms ease" }}>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {expandedFaq === i && (
+                    <div style={{ padding: "0 14px 11px", fontFamily: "var(--font-dm-sans)", fontSize: "13px", color: "var(--muted)", lineHeight: 1.6 }}>
+                      {item.a}
+                    </div>
+                  )}
                 </div>
+              ))}
+              <a href="tel:+18085550192" style={{
+                display: "block", textAlign: "center" as const, marginTop: "8px",
+                padding: "11px 16px", borderRadius: "10px",
+                background: "var(--gold)", color: "#0a0a10",
+                fontFamily: "var(--font-dm-sans)", fontSize: "13.5px", fontWeight: 600,
+                textDecoration: "none", WebkitTapHighlightColor: "transparent",
+                transition: "opacity 150ms ease",
+              }}>
+                Call Us: (808) 555-0192 →
+              </a>
+            </div>
+          )}
+
+          {/* Live Chat Mode */}
+          {mode === "live" && (
+            <>
+              <div className="chat-messages">
+                {messages.map((msg, i) => (
+                  <div key={i} className={`msg msg-${msg.type}`}>
+                    {msg.type === "bot" && <span className="msg-label">Leilani</span>}
+                    <div className="msg-bubble">{msg.text}</div>
+                  </div>
+                ))}
+                {isLoading && (
+                  <div className="msg msg-bot">
+                    <span className="msg-label">Leilani</span>
+                    <div className="msg-bubble" style={{ display: "flex", gap: "4px", alignItems: "center" }}>
+                      {[0, 160, 320].map(delay => (
+                        <span key={delay} style={{
+                          width: "5px", height: "5px", borderRadius: "50%",
+                          background: "var(--muted)", display: "inline-block",
+                          animation: `fadeIn 600ms ease ${delay}ms infinite alternate`,
+                        }} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <div ref={messagesEndRef} />
               </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-          <div className="chat-input-row">
-            <input
-              className="chat-input"
-              placeholder="Ask about flights, pricing, availability..."
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={e => { if (e.key === "Enter") handleSend(); }}
-              disabled={isLoading}
-            />
-            <button className="chat-send" onClick={handleSend} disabled={!input.trim() || isLoading} aria-label="Send">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M14 2L2 7L7 9L9 14L14 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
-              </svg>
-            </button>
-          </div>
+              <div className="chat-input-row">
+                <input
+                  className="chat-input"
+                  placeholder="Ask about flights, pricing, availability..."
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter") handleSend(); }}
+                  disabled={isLoading}
+                />
+                <button className="chat-send" onClick={handleSend} disabled={!input.trim() || isLoading} aria-label="Send">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M14 2L2 7L7 9L9 14L14 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+            </>
+          )}
         </div>
       )}
       <button
         className={`chat-trigger${pulsing ? " pulse" : ""}`}
         onClick={() => setOpen(o => !o)}
-        aria-label="Chat with us"
+        aria-label={open ? "Close chat" : "Chat with us"}
       >
-        <CompassIcon />
+        {open ? (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        ) : (
+          <CompassIcon />
+        )}
       </button>
     </>
   );
@@ -1612,7 +1686,9 @@ export default function HelicopterDemo() {
       </footer>
 
       {/* ── Chat Widget ── */}
-      <ChatWidget />
+      <ErrorBoundary>
+        <ChatWidget />
+      </ErrorBoundary>
     </>
   );
 }

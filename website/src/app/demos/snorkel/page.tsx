@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 /* ─── Light Ray Animation ─────────────────────────────────────────── */
 const lightRayCSS = `
@@ -743,7 +744,7 @@ function BookingSection() {
             <span>✉️</span> Email Us
           </a>
         </div>
-        <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "12px", color: "rgba(138,154,170,0.6)", marginTop: "20px" }}>
+        <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "12px", color: "#7a8a9a", marginTop: "20px" }}>
           *Sea turtle sightings based on 94% of morning tours, March–November.
         </p>
       </div>
@@ -760,10 +761,10 @@ function Footer() {
       padding: "32px 24px",
       textAlign: "center",
     }}>
-      <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "13px", color: "rgba(138,154,170,0.5)", margin: 0 }}>
+      <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "13px", color: "#7a8a9a", margin: 0 }}>
         © 2026 Maui Snorkel Co. · Kihei Boat Ramp, Maui, HI · Aloha.
       </p>
-      <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "11px", color: "rgba(138,154,170,0.3)", marginTop: "6px" }}>
+      <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "11px", color: "#6a7a8a", marginTop: "6px" }}>
         Powered by{" "}
         <a href="/" style={{ color: "rgba(196,98,10,0.7)", textDecoration: "none" }}
           onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.color = "rgba(196,98,10,1)"}
@@ -775,19 +776,32 @@ function Footer() {
 }
 
 /* ─── Chat Widget ─────────────────────────────────────────────────── */
+const SNORKEL_FAQ = [
+  { q: "What time do tours start?", a: "Morning tours depart at 7:00 AM and 9:30 AM daily. Sunset tour at 4:30 PM. All depart from Kihei Boat Ramp." },
+  { q: "What gear is included?", a: "Everything — masks, fins, snorkels, wetsuits, and flotation vests. Just bring reef-safe sunscreen and a towel." },
+  { q: "How much does it cost?", a: "$89/person for adults, $65 for kids under 12. All gear, instruction, and a light breakfast included." },
+  { q: "Where do we meet?", a: "Kihei Boat Ramp — 2 Kaonoulu St, Kihei, HI 96753. Free parking right there." },
+];
+
 function ChatWidget() {
   const [open, setOpen] = useState(false);
   const [pulse, setPulse] = useState(false);
+  const [mode, setMode] = useState<"live" | "faq">("faq");
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [messages, setMessages] = useState([
-    { from: "bot", text: "👋 Aloha! I'm Kai, your Maui Snorkel Co. assistant. What can I help you with today?" },
-    { from: "user", text: "What time do tours start?" },
-    { from: "bot", text: "Morning snorkel tours depart at 7:00 AM and 9:30 AM daily from Kihei Boat Ramp. Sunset tours leave at 4:30 PM. Want me to check availability for a specific date?" },
-    { from: "user", text: "Do you provide gear?" },
-    { from: "bot", text: "Yes — masks, fins, snorkels, and wetsuits are all included for every guest. Nothing to bring except sunscreen and a sense of adventure! 🐢" },
+    { from: "bot", text: "Aloha! I'm Kai, your Maui Snorkel Co. assistant. Ask me anything about tours, gear, or availability." },
   ]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Check Botpress status on mount
+  useEffect(() => {
+    fetch("/api/chat/snorkel")
+      .then(r => r.json())
+      .then(d => { if (d.live) setMode("live"); })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const t = setTimeout(() => setPulse(true), 4000);
@@ -796,8 +810,8 @@ function ChatWidget() {
   }, []);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isLoading]);
+    if (mode === "live") messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, isLoading, mode]);
 
   async function handleSend() {
     const text = input.trim();
@@ -812,9 +826,9 @@ function ChatWidget() {
         body: JSON.stringify({ message: text }),
       });
       const data = await res.json();
-      setMessages(prev => [...prev, { from: "bot", text: data.reply ?? "Let me connect you with our team — call us at (808) 555-0121 for immediate help." }]);
+      setMessages(prev => [...prev, { from: "bot", text: data.reply ?? "Let me connect you with our team — call us at (808) 555-0121." }]);
     } catch {
-      setMessages(prev => [...prev, { from: "bot", text: "Let me connect you with our team — call us at (808) 555-0121 for immediate help." }]);
+      setMode("faq");
     } finally {
       setIsLoading(false);
     }
@@ -833,113 +847,153 @@ function ChatWidget() {
           boxShadow: "0 24px 64px rgba(0,0,0,0.55), 0 0 0 1px rgba(42,152,152,0.1)",
           zIndex: 49, overflow: "hidden",
           display: "flex", flexDirection: "column" as const,
+          animation: "chatSlideIn 300ms ease both",
         }}>
           {/* Header */}
           <div style={{
             padding: "16px 20px",
             background: "linear-gradient(135deg, #0d3348, #0f3f58)",
             borderBottom: "1px solid rgba(42,152,152,0.15)",
-            display: "flex", alignItems: "center", gap: "12px",
+            display: "flex", alignItems: "center", justifyContent: "space-between",
           }}>
-            <div style={{
-              width: "36px", height: "36px", borderRadius: "50%",
-              background: "rgba(42,152,152,0.2)", border: "1px solid rgba(42,152,152,0.4)",
-              display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px",
-            }}>🏖️</div>
-            <div>
-              <div style={{ fontFamily: "var(--font-outfit)", fontWeight: 700, fontSize: "14px", color: "#f5f5f0" }}>Kai · Maui Snorkel Co.</div>
-              <div style={{ display: "flex", alignItems: "center", gap: "5px", marginTop: "2px" }}>
-                <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#4ade80", display: "inline-block" }} />
-                <span style={{ fontFamily: "var(--font-dm-sans)", fontSize: "11px", color: "#8a9aaa" }}>Online now</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <div style={{
+                width: "36px", height: "36px", borderRadius: "50%",
+                background: "rgba(42,152,152,0.2)", border: "1px solid rgba(42,152,152,0.4)",
+                display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px",
+              }}>🏖️</div>
+              <div>
+                <div style={{ fontFamily: "var(--font-outfit)", fontWeight: 700, fontSize: "14px", color: "#f5f5f0" }}>Kai · Maui Snorkel Co.</div>
+                <div style={{ display: "flex", alignItems: "center", gap: "5px", marginTop: "2px" }}>
+                  <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: mode === "live" ? "#4ade80" : "#8a9aaa", display: "inline-block" }} />
+                  <span style={{ fontFamily: "var(--font-dm-sans)", fontSize: "11px", color: "#8a9aaa" }}>
+                    {mode === "live" ? "Online now" : "Setting up — quick answers below"}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-
-          {/* Messages */}
-          <div style={{ padding: "16px 16px 8px", display: "flex", flexDirection: "column" as const, gap: "10px", maxHeight: "280px", overflowY: "auto" as const }}>
-            {messages.map((msg, i) => (
-              <div key={i} style={{
-                display: "flex", justifyContent: msg.from === "user" ? "flex-end" : "flex-start",
-                animation: `msgSlideIn 0.3s ease ${Math.min(i, 4) * 0.08}s both`,
-              }}>
-                <div style={{
-                  maxWidth: "82%",
-                  padding: "10px 14px",
-                  borderRadius: msg.from === "user" ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
-                  background: msg.from === "user" ? "#2a9898" : "#1a3550",
-                  color: msg.from === "user" ? "#0a1628" : "rgba(245,245,240,0.88)",
-                  fontFamily: "var(--font-dm-sans)", fontSize: "13px", lineHeight: 1.55,
-                  fontWeight: msg.from === "user" ? 600 : 400,
-                }}>
-                  {msg.text}
-                </div>
-              </div>
-            ))}
-            {isLoading && (
-              <div style={{ display: "flex", justifyContent: "flex-start" }}>
-                <div style={{
-                  padding: "10px 16px", borderRadius: "16px 16px 16px 4px",
-                  background: "#1a3550", display: "flex", gap: "4px", alignItems: "center",
-                }}>
-                  {[0, 160, 320].map(delay => (
-                    <span key={delay} style={{
-                      width: "5px", height: "5px", borderRadius: "50%", background: "#2a9898",
-                      display: "inline-block",
-                      animation: `fadeInUp 600ms ease ${delay}ms infinite alternate`,
-                    }} />
-                  ))}
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Input */}
-          <div style={{ padding: "12px 16px 16px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-            <div style={{
-              display: "flex", gap: "8px", alignItems: "center",
-              background: "#1a3550", borderRadius: "12px", padding: "8px 8px 8px 14px",
-              border: "1px solid rgba(42,152,152,0.15)",
+            <button onClick={() => setOpen(false)} aria-label="Close chat" style={{
+              background: "none", border: "none", cursor: "pointer", color: "#8a9aaa",
+              padding: "6px", borderRadius: "6px", WebkitTapHighlightColor: "transparent",
+              minWidth: "32px", minHeight: "32px", display: "flex", alignItems: "center", justifyContent: "center",
             }}>
-              <input
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                onKeyDown={e => { if (e.key === "Enter") handleSend(); }}
-                placeholder="Ask about tours, gear, availability…"
-                disabled={isLoading}
-                style={{
-                  flex: 1, background: "none", border: "none", outline: "none",
-                  fontFamily: "var(--font-dm-sans)", fontSize: "13px",
-                  color: "#f5f5f0", minHeight: "24px",
-                }}
-              />
-              <button
-                onClick={handleSend}
-                disabled={!input.trim() || isLoading}
-                style={{
-                  background: input.trim() && !isLoading ? "#2a9898" : "rgba(42,152,152,0.3)",
-                  border: "none", borderRadius: "8px",
-                  width: "32px", height: "32px", cursor: input.trim() && !isLoading ? "pointer" : "not-allowed",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  flexShrink: 0, WebkitTapHighlightColor: "transparent",
-                  transition: "background-color 150ms ease",
-                }}
-                onMouseEnter={e => { if (input.trim() && !isLoading) (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#3ab8b8"; }}
-                onMouseLeave={e => { if (input.trim() && !isLoading) (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#2a9898"; }}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0a1628" strokeWidth="2.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z" />
-                </svg>
-              </button>
-            </div>
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
+
+          {/* FAQ Mode */}
+          {mode === "faq" && (
+            <div style={{
+              flex: 1, overflowY: "auto" as const, padding: "16px",
+              display: "flex", flexDirection: "column" as const, gap: "8px", maxHeight: "400px",
+              scrollbarWidth: "thin" as const,
+            }}>
+              <p style={{ fontFamily: "var(--font-dm-sans)", fontSize: "13px", color: "#8a9aaa", margin: "0 0 6px", lineHeight: 1.5 }}>
+                Our AI assistant is getting set up. Quick answers:
+              </p>
+              {SNORKEL_FAQ.map((item, i) => (
+                <div key={i} style={{
+                  background: "rgba(255,255,255,0.04)",
+                  border: expandedFaq === i ? "1px solid rgba(42,152,152,0.4)" : "1px solid rgba(255,255,255,0.07)",
+                  borderRadius: "12px", overflow: "hidden", transition: "border-color 150ms ease",
+                }}>
+                  <button onClick={() => setExpandedFaq(expandedFaq === i ? null : i)} style={{
+                    width: "100%", textAlign: "left" as const, background: "none", border: "none",
+                    padding: "12px 14px", cursor: "pointer",
+                    display: "flex", justifyContent: "space-between", alignItems: "center", gap: "8px",
+                    WebkitTapHighlightColor: "transparent",
+                  }}>
+                    <span style={{ fontFamily: "var(--font-dm-sans)", fontSize: "13px", color: "#f5f5f0", fontWeight: 500, lineHeight: 1.4 }}>{item.q}</span>
+                    <svg width="14" height="14" fill="none" stroke="#8a9aaa" viewBox="0 0 24 24" style={{ flexShrink: 0, transform: expandedFaq === i ? "rotate(180deg)" : "rotate(0)", transition: "transform 200ms ease" }}>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {expandedFaq === i && (
+                    <div style={{ padding: "0 14px 12px", fontFamily: "var(--font-dm-sans)", fontSize: "13px", color: "#8ab8c8", lineHeight: 1.6 }}>
+                      {item.a}
+                    </div>
+                  )}
+                </div>
+              ))}
+              <a href="tel:+18085550121" style={{
+                display: "block", textAlign: "center" as const, marginTop: "8px",
+                padding: "12px 16px", borderRadius: "12px",
+                background: "#2a9898", color: "#f5f5f0",
+                fontFamily: "var(--font-dm-sans)", fontSize: "13.5px", fontWeight: 600,
+                textDecoration: "none", WebkitTapHighlightColor: "transparent",
+                transition: "background-color 150ms ease",
+              }}>
+                Call Us: (808) 555-0121 →
+              </a>
+            </div>
+          )}
+
+          {/* Live Chat Mode */}
+          {mode === "live" && (
+            <>
+              <div style={{ padding: "16px 16px 8px", display: "flex", flexDirection: "column" as const, gap: "10px", maxHeight: "280px", overflowY: "auto" as const, scrollbarWidth: "thin" as const }}>
+                {messages.map((msg, i) => (
+                  <div key={i} style={{ display: "flex", justifyContent: msg.from === "user" ? "flex-end" : "flex-start" }}>
+                    <div style={{
+                      maxWidth: "82%", padding: "10px 14px",
+                      borderRadius: msg.from === "user" ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
+                      background: msg.from === "user" ? "#2a9898" : "#1a3550",
+                      color: msg.from === "user" ? "#0a1628" : "rgba(245,245,240,0.88)",
+                      fontFamily: "var(--font-dm-sans)", fontSize: "13px", lineHeight: 1.55,
+                      fontWeight: msg.from === "user" ? 600 : 400,
+                    }}>{msg.text}</div>
+                  </div>
+                ))}
+                {isLoading && (
+                  <div style={{ display: "flex", justifyContent: "flex-start" }}>
+                    <div style={{ padding: "10px 16px", borderRadius: "16px 16px 16px 4px", background: "#1a3550", display: "flex", gap: "4px", alignItems: "center" }}>
+                      {[0, 160, 320].map(delay => (
+                        <span key={delay} style={{ width: "5px", height: "5px", borderRadius: "50%", background: "#2a9898", display: "inline-block", animation: `fadeInUp 600ms ease ${delay}ms infinite alternate` }} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+              <div style={{ padding: "12px 16px 16px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                <div style={{ display: "flex", gap: "8px", alignItems: "center", background: "#1a3550", borderRadius: "12px", padding: "8px 8px 8px 14px", border: "1px solid rgba(42,152,152,0.15)" }}>
+                  <input
+                    value={input}
+                    onChange={e => setInput(e.target.value)}
+                    onKeyDown={e => { if (e.key === "Enter") handleSend(); }}
+                    placeholder="Ask about tours, gear, availability…"
+                    disabled={isLoading}
+                    style={{ flex: 1, background: "none", border: "none", outline: "none", fontFamily: "var(--font-dm-sans)", fontSize: "13px", color: "#f5f5f0", minHeight: "44px" }}
+                  />
+                  <button
+                    onClick={handleSend}
+                    disabled={!input.trim() || isLoading}
+                    style={{
+                      background: input.trim() && !isLoading ? "#2a9898" : "rgba(42,152,152,0.3)",
+                      border: "none", borderRadius: "8px", width: "36px", height: "36px",
+                      cursor: input.trim() && !isLoading ? "pointer" : "not-allowed",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      flexShrink: 0, WebkitTapHighlightColor: "transparent",
+                      transition: "background-color 150ms ease",
+                    }}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0a1628" strokeWidth="2.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       )}
 
       {/* Trigger button */}
       <button
         onClick={() => setOpen(v => !v)}
-        aria-label="Open chat"
+        aria-label={open ? "Close chat" : "Open chat"}
         style={{
           position: "fixed", bottom: "24px", right: "24px", zIndex: 50,
           width: "56px", height: "56px", borderRadius: "50%",
@@ -981,7 +1035,9 @@ export default function SnorkelPage() {
         <ReviewsSection />
         <BookingSection />
         <Footer />
-        <ChatWidget />
+        <ErrorBoundary>
+          <ChatWidget />
+        </ErrorBoundary>
       </main>
     </>
   );

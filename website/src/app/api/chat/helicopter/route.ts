@@ -59,6 +59,10 @@ function matchCategory(msg: string): string {
   return 'default'
 }
 
+export async function GET() {
+  return NextResponse.json({ live: !!process.env.BOTPRESS_HELI_WEBHOOK_URL })
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()

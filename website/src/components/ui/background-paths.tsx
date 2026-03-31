@@ -163,7 +163,7 @@ export function BackgroundPaths({
           </motion.div>
 
           {/* Animated headline */}
-          <h2
+          <h1
             style={{
               fontFamily: "var(--font-outfit)",
               fontWeight: 800,
@@ -205,7 +205,7 @@ export function BackgroundPaths({
                 ))}
               </span>
             ))}
-          </h2>
+          </h1>
 
           {/* Subheading */}
           <motion.p

@@ -1,26 +1,37 @@
 import { HeroSection } from "@/components/ui/galaxy-interactive-hero-section";
 import { ChatbotWidget } from "@/components/ui/chatbot-widget";
 import { BackgroundPaths } from "@/components/ui/background-paths";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
+
+/* ─── Module-level constants ──────────────────────────────────────── */
+const PROBLEMS = [
+  {
+    stat: "62%",
+    title: "After-Hours Ghost",
+    body: "62% of booking decisions happen outside business hours. Your phone doesn't answer at 11pm.",
+  },
+  {
+    stat: "6×",
+    title: "The Repetitive Grind",
+    body: "The same 6 questions, every single day. Time spent answering those isn't being spent on the water.",
+  },
+  {
+    stat: "5 min",
+    title: "Slow Means Lost",
+    body: "A lead without a response in 5 minutes is 80% likely to book with someone else. Speed is everything.",
+  },
+];
+
+const CONVERSATION = [
+  { role: 'user', text: "Do you have snorkel tours this Saturday?" },
+  { role: 'bot',  text: "Yes! Morning departures at 7 AM and 9:30 AM from Kihei Boat Ramp. All gear included. Want me to hold a spot?" },
+  { role: 'user', text: "How much does it cost?" },
+  { role: 'bot',  text: "Tours are $89/person for adults, $65 for kids under 12. Groups of 6+ get 10% off. Want to book for Saturday?" },
+];
 
 /* ─── Problem Section ─────────────────────────────────────────────── */
 function ProblemSection() {
-  const problems = [
-    {
-      stat: "62%",
-      title: "After-Hours Ghost",
-      body: "62% of booking decisions happen outside business hours. Your phone doesn't answer at 11pm.",
-    },
-    {
-      stat: "6×",
-      title: "The Repetitive Grind",
-      body: "The same 6 questions, every single day. Time spent answering those isn't being spent on the water.",
-    },
-    {
-      stat: "5 min",
-      title: "Slow Means Lost",
-      body: "A lead without a response in 5 minutes is 80% likely to book with someone else. Speed is everything.",
-    },
-  ];
+  const problems = PROBLEMS;
 
   return (
     <section style={{
@@ -101,12 +112,7 @@ function ProblemSection() {
 
 /* ─── Solution Section ────────────────────────────────────────────── */
 function SolutionSection() {
-  const conversation = [
-    { role: 'user', text: "Do you have snorkel tours this Saturday?" },
-    { role: 'bot',  text: "Yes! Morning departures at 7 AM and 9:30 AM from Kihei Boat Ramp. All gear included. Want me to hold a spot?" },
-    { role: 'user', text: "How much does it cost?" },
-    { role: 'bot',  text: "Tours are $89/person for adults, $65 for kids under 12. Groups of 6+ get 10% off. Want to book for Saturday?" },
-  ];
+  const conversation = CONVERSATION;
 
   return (
     <section id="demo" style={{
@@ -550,7 +556,7 @@ function PricingSection() {
     "Mobile-first design",
     "AI trained on your specific business",
     "Mock chatbot live from day one",
-    "No contracts or hidden fees",
+    "No hidden fees",
   ];
 
   return (
@@ -602,14 +608,14 @@ function PricingSection() {
           {/* Price */}
           <div style={{ marginBottom: '28px' }}>
             <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: '13px', color: '#8a8a9a', marginBottom: '6px' }}>
-              Starting at
+              One-time build
             </div>
             <div style={{
               fontFamily: 'var(--font-outfit)', fontWeight: 800,
               fontSize: '4rem', color: '#c4620a', letterSpacing: '-0.04em', lineHeight: 1,
               marginBottom: '8px',
             }}>
-              $500
+              $1,000
             </div>
             <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: '15px', color: '#b0b0be', lineHeight: 1.5 }}>
               One-time build. Your AI, your site, fully trained.
@@ -639,9 +645,9 @@ function PricingSection() {
 
           {/* Retainer */}
           <div style={{ marginBottom: '28px' }}>
-            <span style={{ fontFamily: 'var(--font-outfit)', fontWeight: 700, fontSize: '1.1rem', color: '#f5f5f0' }}>+$150<span style={{ fontWeight: 400, fontSize: '14px', color: '#8a8a9a' }}>/mo optional</span></span>
+            <span style={{ fontFamily: 'var(--font-outfit)', fontWeight: 700, fontSize: '1.1rem', color: '#f5f5f0' }}>then $50<span style={{ fontWeight: 400, fontSize: '14px', color: '#8a8a9a' }}>/mo</span></span>
             <p style={{ fontFamily: 'var(--font-dm-sans)', fontSize: '13px', color: '#8a8a9a', marginTop: '4px', lineHeight: 1.5 }}>
-              Updates, retraining, and priority support. Cancel any time.
+              Updates, retraining, and priority support — keeps your bot live and current.
             </p>
           </div>
 
@@ -761,7 +767,9 @@ export default function Home() {
       <DemoShowcaseSection />
       <PricingSection />
       <CTAFooter />
-      <ChatbotWidget />
+      <ErrorBoundary>
+        <ChatbotWidget />
+      </ErrorBoundary>
     </main>
   );
 }
