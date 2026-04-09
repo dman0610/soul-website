@@ -37,8 +37,6 @@ Key facts:
 
 Keep every answer to 2–3 sentences. Be warm, confident, and direct. Push interested visitors toward booking a free call.`
 
-const client = new Anthropic()
-
 export async function GET() {
   return NextResponse.json({ live: !!process.env.ANTHROPIC_API_KEY })
 }
@@ -54,6 +52,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    const client = new Anthropic()
     const body = await req.json()
     const message: string = body?.message
     const history: Array<{ role: 'user' | 'assistant'; content: string }> = body?.history ?? []
@@ -80,7 +79,7 @@ export async function POST(req: NextRequest) {
       : 'Something went wrong — please try again.'
 
     return NextResponse.json({ reply })
-  } catch {
-    return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
+  } catch (e) {
+    return NextResponse.json({ error: 'Something went wrong', detail: e instanceof Error ? e.message : String(e) }, { status: 500 })
   }
 }
