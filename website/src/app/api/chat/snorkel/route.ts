@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
     ]
 
     const response = await client.messages.create({
-      model: 'claude-3-haiku-20240307',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 200,
       system: SYSTEM_PROMPT,
       messages,
@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
       : 'Something went wrong — please try again.'
 
     return NextResponse.json({ reply })
-  } catch (e) {
-    return NextResponse.json({ error: 'Something went wrong', detail: e instanceof Error ? e.message : String(e) }, { status: 500 })
+  } catch {
+    return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }
 }
