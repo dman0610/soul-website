@@ -53,11 +53,6 @@ function Navbar() {
       borderBottom: scrolled ? "1px solid rgba(255,255,255,0.07)" : "1px solid transparent",
       transition: "background-color 350ms ease, border-color 350ms ease",
     }}>
-      {/* ═══════════════════════════════════════════════════ */}
-      {/* BOTPRESS EMBED — add real snippet after Botpress setup */}
-      {/* <script src="https://cdn.botpress.cloud/webchat/v2/inject.js"></script> */}
-      {/* <script src="https://files.bpcontent.cloud/YOUR_BOT_ID/webchat.js"></script> */}
-      {/* ═══════════════════════════════════════════════════ */}
 
       <div style={{
         maxWidth: "1200px", margin: "0 auto", padding: "0 24px",
@@ -790,12 +785,13 @@ function ChatWidget() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+  const [history, setHistory] = useState<Array<{ role: "user" | "assistant"; content: string }>>([]);
   const [messages, setMessages] = useState([
     { from: "bot", text: "Aloha! I'm Kai, your Maui Snorkel Co. assistant. Ask me anything about tours, gear, or availability." },
   ]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Check Botpress status on mount
+  // Check Claude API status on mount — upgrades to live when ANTHROPIC_API_KEY is set
   useEffect(() => {
     fetch("/api/chat/snorkel")
       .then(r => r.json())
@@ -823,10 +819,16 @@ function ChatWidget() {
       const res = await fetch("/api/chat/snorkel", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text }),
+        body: JSON.stringify({ message: text, history }),
       });
       const data = await res.json();
-      setMessages(prev => [...prev, { from: "bot", text: data.reply ?? "Let me connect you with our team — call us at (808) 555-0121." }]);
+      const reply = data.reply ?? "Let me connect you with our team — call us at (808) 555-0121.";
+      setMessages(prev => [...prev, { from: "bot", text: reply }]);
+      setHistory(prev => [
+        ...prev,
+        { role: "user" as const, content: text },
+        { role: "assistant" as const, content: reply },
+      ].slice(-10));
     } catch {
       setMode("faq");
     } finally {

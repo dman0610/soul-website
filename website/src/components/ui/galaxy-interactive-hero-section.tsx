@@ -91,13 +91,6 @@ function SoulNavbar() {
       borderBottom: scrolled ? '1px solid rgba(255,255,255,0.06)' : '1px solid transparent',
       transition: 'background-color 350ms ease, border-color 350ms ease, backdrop-filter 350ms ease',
     }}>
-      {/* Botpress Embed Placeholder */}
-      {/* ═══════════════════════════════════════════════════ */}
-      {/* BOTPRESS EMBED — add real snippet after Botpress setup */}
-      {/* <script src="https://cdn.botpress.cloud/webchat/v2/inject.js"></script> */}
-      {/* <script src="https://files.bpcontent.cloud/YOUR_BOT_ID/webchat.js"></script> */}
-      {/* ═══════════════════════════════════════════════════ */}
-
       <div style={{
         maxWidth: '1200px', margin: '0 auto', padding: '0 24px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '64px',

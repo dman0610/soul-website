@@ -97,34 +97,35 @@ When a prospect sees the Soul site or a demo site, the design *is* the pitch. It
 
 ## Chatbot System
 
-**Platform:** Botpress (demos). Advertise to clients as Custom Claude API.
+**Platform:** Claude API (claude-haiku-4-5-20251001). All three bots are live when `ANTHROPIC_API_KEY` is set.
 
-### Botpress Embed Placeholder
-Include this comment block in every page `<head>` until Botpress is configured:
-```html
-<!-- ═══════════════════════════════════════════════════ -->
-<!-- BOTPRESS EMBED — add real snippet after Botpress setup -->
-<!-- <script src="https://cdn.botpress.cloud/webchat/v2/inject.js"></script> -->
-<!-- <script src="https://files.bpcontent.cloud/YOUR_BOT_ID/webchat.js"></script> -->
-<!-- ═══════════════════════════════════════════════════ -->
+### Three Bots — Three Routes
+Each bot has its own API route with a hard-coded system prompt:
+
+| Bot | Route | System prompt persona |
+|---|---|---|
+| Soul landing page | `/api/chat/soul` | Soul sales assistant |
+| Maui Air Tours demo | `/api/chat/helicopter` | Leilani, tour concierge |
+| Maui Snorkel Co. demo | `/api/chat/snorkel` | Kai, snorkel assistant |
+
+### Architecture
+- **Greeting:** Pre-programmed in component state — no API call on open
+- **History:** Client sends last 5 exchanges (10 messages) with each POST. Server is stateless.
+- **Token limit:** `max_tokens: 200` — keeps responses short, controls cost
+- **Rate limit:** 15 req/min per IP (in-memory, server-side)
+- **Fallback:** If `ANTHROPIC_API_KEY` is not set, widget falls back to FAQ accordion mode
+
+### Env Variable
+One key for all three bots:
+```
+ANTHROPIC_API_KEY=   # Vercel → Settings → Environment Variables
 ```
 
-### Mock Chat Widget (required until Botpress is live)
-Every page needs a working chat trigger built in HTML/CSS/JS — no Botpress required.
-
-**Trigger button:**
+### Chat Trigger Button
 - Position: `fixed; bottom: 24px; right: 24px; z-index: 50`
 - Size: 56×56px circle
 - Icon: per PROJECT.md spec for each page (yin-yang / shack / compass)
-- On click: toggle mock chat panel open/closed
-
-**Mock panel:** pre-populate 2–3 exchanges that open automatically. Use specific Maui details:
-```
-Visitor: What time do tours start?
-Bot: Morning snorkel tours depart at 7:00 AM and 9:30 AM daily from Kihei Boat Ramp. Want me to check availability?
-Visitor: Do you provide gear?
-Bot: Yes — masks, fins, snorkels, and wetsuits are all included. Nothing to bring except sunscreen.
-```
+- On click: toggle chat panel open/closed
 
 **Pulse animation (required — fires once, 4 seconds after load):**
 ```css

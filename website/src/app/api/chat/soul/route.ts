@@ -1,82 +1,85 @@
+import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 
 export const dynamic = 'force-dynamic'
 
-// ── Soul AI Assistant — Botpress Proxy ────────────────────────────────────────
-// Tokens live in .env.local (local) and Vercel env vars (production).
-// Never import process.env.BOTPRESS_* in a client component.
-//
-// To activate: set BOTPRESS_SOUL_WEBHOOK_URL (+ optionally BOTPRESS_SOUL_TOKEN)
-// in Vercel → Settings → Environment Variables, then redeploy.
+// ── Soul AI Assistant — Claude API ────────────────────────────────────────────
+// ANTHROPIC_API_KEY lives in .env.local (local) and Vercel env vars (production).
+// Never import process.env.ANTHROPIC_API_KEY in a client component.
+// Add production value in: Vercel → Settings → Environment Variables
 // ─────────────────────────────────────────────────────────────────────────────
 
-const pick = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)]
+// Per-IP rate limiter — in-memory, resets every 60s per IP
+const rateLimits = new Map<string, { count: number; resetAt: number }>()
+const RATE_LIMIT = 15
+const RATE_WINDOW = 60_000
 
-const MOCK: Record<string, string[]> = {
-  what: [
-    "Soul builds custom AI chatbots for tourism businesses — trained on your specific services, pricing, and FAQs. It answers questions, handles bookings, and follows up 24/7.",
-    "Think of Soul as a staff member who never sleeps. It answers every inquiry the moment it arrives — midnight, peak season, or during your busiest day on the water.",
-  ],
-  price: [
-    "Soul starts at $500 for the build and setup. Optional support is $150/month — that covers updates, retraining, and monitoring. No contracts.",
-    "It's a $500 one-time build. If you want ongoing updates and priority support, that's $150/month — totally optional.",
-  ],
-  time: [
-    "Most bots go live in 7 days. We gather your info, build the bot, train it on your business, and hand it over ready to go.",
-    "7 days from kickoff to live. We handle everything — you just review and approve before launch.",
-  ],
-  book: [
-    "Book a free 20-minute call and we'll walk through exactly what Soul would look like for your business. No pitch, just a demo. Use the button above or email us at hello@soulgrowth.ai.",
-    "The fastest way to get started is a free call — 20 minutes, we show you the bot live, you ask questions. Hit 'Book a Free Call' above.",
-  ],
-  default: [
-    "Great question. I can walk you through what Soul does, how much it costs, how fast it launches, or how to book a call. What do you want to know?",
-    "Happy to help. Ask me about pricing, timeline, how it works, or how to get started.",
-  ],
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now()
+  const entry = rateLimits.get(ip)
+  if (!entry || now > entry.resetAt) {
+    rateLimits.set(ip, { count: 1, resetAt: now + RATE_WINDOW })
+    return true
+  }
+  if (entry.count >= RATE_LIMIT) return false
+  entry.count++
+  return true
 }
 
-function matchCategory(msg: string): string {
-  const m = msg.toLowerCase()
-  if (m.includes('what') || m.includes('how does') || m.includes('explain') || m.includes('tell me')) return 'what'
-  if (m.includes('price') || m.includes('cost') || m.includes('how much') || m.includes('$') || m.includes('fee') || m.includes('plan')) return 'price'
-  if (m.includes('time') || m.includes('long') || m.includes('fast') || m.includes('when') || m.includes('days') || m.includes('launch')) return 'time'
-  if (m.includes('book') || m.includes('call') || m.includes('start') || m.includes('sign') || m.includes('get started') || m.includes('contact')) return 'book'
-  return 'default'
-}
+const SYSTEM_PROMPT = `You are the AI assistant for Soul — an agency that builds custom AI chatbots for small tourism businesses in Maui, Hawaii. Help potential clients understand what Soul does, how much it costs, and how to get started.
+
+Key facts:
+- Soul builds custom AI chatbots trained on a business's specific services, pricing, and FAQs
+- Pricing: $1,000 one-time build, $50/month for ongoing support (optional)
+- Timeline: 7 days from kickoff to live
+- The chatbot answers customer questions 24/7, handles inquiries during off-hours, reduces repetitive staff workload
+- Book a free 20-minute demo call: hello@soulgrowth.ai or use the "Book a Free Call" button on the page
+
+Keep every answer to 2–3 sentences. Be warm, confident, and direct. Push interested visitors toward booking a free call.`
+
+const client = new Anthropic()
 
 export async function GET() {
-  return NextResponse.json({ live: !!process.env.BOTPRESS_SOUL_WEBHOOK_URL })
+  return NextResponse.json({ live: !!process.env.ANTHROPIC_API_KEY })
 }
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
+  if (!checkRateLimit(ip)) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return NextResponse.json({ error: 'Not configured' }, { status: 503 })
+  }
+
   try {
     const body = await req.json()
     const message: string = body?.message
+    const history: Array<{ role: 'user' | 'assistant'; content: string }> = body?.history ?? []
 
     if (!message || typeof message !== 'string') {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
     }
 
-    // ── Botpress proxy (runs when env vars are set) ───────────────────────────
-    const webhookUrl = process.env.BOTPRESS_SOUL_WEBHOOK_URL
-    if (webhookUrl) {
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-      if (process.env.BOTPRESS_SOUL_TOKEN) {
-        headers['Authorization'] = `Bearer ${process.env.BOTPRESS_SOUL_TOKEN}`
-      }
-      const bpRes = await fetch(webhookUrl, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ message }),
-      })
-      const data = await bpRes.json()
-      const reply = data.reply ?? data.text ?? data.responses?.[0]?.text ?? data.answer
-      if (reply) return NextResponse.json({ reply })
-    }
+    const trimmedHistory = history.slice(-10)
+    const messages = [
+      ...trimmedHistory,
+      { role: 'user' as const, content: message },
+    ]
 
-    // ── Mock fallback (used when Botpress is not configured) ──────────────────
-    await new Promise(r => setTimeout(r, 500 + Math.random() * 400))
-    return NextResponse.json({ reply: pick(MOCK[matchCategory(message)] ?? MOCK.default) })
+    const response = await client.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 200,
+      system: SYSTEM_PROMPT,
+      messages,
+    })
+
+    const reply = response.content[0]?.type === 'text'
+      ? response.content[0].text
+      : 'Something went wrong — please try again.'
+
+    return NextResponse.json({ reply })
   } catch {
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }

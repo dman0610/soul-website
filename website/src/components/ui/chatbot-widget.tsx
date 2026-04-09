@@ -8,6 +8,11 @@ interface Message {
   text: string;
 }
 
+interface HistoryEntry {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
 const SOUL_FAQ = [
   {
     q: "What is Soul?",
@@ -95,11 +100,16 @@ function FaqItem({ q, a, open, onToggle }: { q: string; a: string; open: boolean
 }
 
 // ─── Main Widget ──────────────────────────────────────────────────────────────
-export function ChatbotWidget() {
+interface ChatbotWidgetProps {
+  endpoint?: string;
+}
+
+export function ChatbotWidget({ endpoint = '/api/chat/soul' }: ChatbotWidgetProps) {
   const [isOpen, setIsOpen] = useState(false);
-  // Default to 'faq' — silently upgrades to 'live' if Botpress is configured
+  // Default to 'faq' — upgrades to 'live' when ANTHROPIC_API_KEY is set
   const [mode, setMode] = useState<'live' | 'faq'>('faq');
   const [messages, setMessages] = useState<Message[]>(SEED_MESSAGES);
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [pulsed, setPulsed] = useState(false);
@@ -111,13 +121,13 @@ export function ChatbotWidget() {
   const sparkTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sparkOff = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Check Botpress status on mount — silently upgrade to live if configured
+  // Check API status on mount — upgrade to live if Claude API key is configured
   useEffect(() => {
-    fetch('/api/chat/soul')
+    fetch(endpoint)
       .then(r => r.json())
       .then(d => { if (d.live) setMode('live'); })
       .catch(() => {}); // stay in faq mode on any error
-  }, []);
+  }, [endpoint]);
 
   // Pulse once at 4 seconds
   useEffect(() => {
@@ -170,17 +180,24 @@ export function ChatbotWidget() {
     setIsLoading(true);
 
     try {
-      const res = await fetch('/api/chat/soul', {
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text }),
+        body: JSON.stringify({ message: text, history }),
       });
       const data = await res.json();
+      const reply = data.reply ?? "I'm not sure about that — try asking about tour times, pricing, or gear.";
       setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
         role: 'bot',
-        text: data.reply ?? "I'm not sure about that — try asking about tour times, pricing, or gear.",
+        text: reply,
       }]);
+      // Update conversation history (last 10 messages = 5 exchanges)
+      setHistory(prev => [
+        ...prev,
+        { role: 'user' as const, content: text },
+        { role: 'assistant' as const, content: reply },
+      ].slice(-10));
     } catch {
       // On failure, fall back to FAQ mode
       setMode('faq');

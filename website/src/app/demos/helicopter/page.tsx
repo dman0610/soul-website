@@ -1189,12 +1189,13 @@ function ChatWidget() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+  const [history, setHistory] = useState<Array<{ role: "user" | "assistant"; content: string }>>([]);
   const [messages, setMessages] = useState([
     { type: "bot", text: "Aloha! I'm Leilani, your Maui Air Tours concierge. Ask me about routes, pricing, or how to reserve your flight." },
   ]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Check Botpress status on mount
+  // Check Claude API status on mount — upgrades to live when ANTHROPIC_API_KEY is set
   useEffect(() => {
     fetch("/api/chat/helicopter")
       .then(r => r.json())
@@ -1226,10 +1227,16 @@ function ChatWidget() {
       const res = await fetch("/api/chat/helicopter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text }),
+        body: JSON.stringify({ message: text, history }),
       });
       const data = await res.json();
-      setMessages(prev => [...prev, { type: "bot", text: data.reply ?? "Let me check on that — feel free to call us at (808) 555-0192." }]);
+      const reply = data.reply ?? "Let me check on that — feel free to call us at (808) 555-0192.";
+      setMessages(prev => [...prev, { type: "bot", text: reply }]);
+      setHistory(prev => [
+        ...prev,
+        { role: "user" as const, content: text },
+        { role: "assistant" as const, content: reply },
+      ].slice(-10));
     } catch {
       setMode("faq");
     } finally {
@@ -1239,12 +1246,6 @@ function ChatWidget() {
 
   return (
     <>
-      {/* ═══════════════════════════════════════════════════ */}
-      {/* BOTPRESS EMBED — add real snippet after Botpress setup */}
-      {/* <script src="https://cdn.botpress.cloud/webchat/v2/inject.js"></script> */}
-      {/* <script src="https://files.bpcontent.cloud/YOUR_BOT_ID/webchat.js"></script> */}
-      {/* ═══════════════════════════════════════════════════ */}
-
       {open && (
         <div className="chat-panel" style={{ animation: "chatSlideIn 300ms ease both" }}>
           <div className="chat-header">
