@@ -80,7 +80,8 @@ export async function POST(req: NextRequest) {
       : 'Something went wrong — please try again.'
 
     return NextResponse.json({ reply })
-  } catch {
+  } catch (e) {
+    console.error('[chat/snorkel error]', e)
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }
 }

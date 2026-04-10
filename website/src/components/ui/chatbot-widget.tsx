@@ -28,7 +28,7 @@ const SOUL_FAQ = [
   },
   {
     q: "How do I get started?",
-    a: "Book a free 20-minute call — we'll show you the bot live and answer any questions. Hit 'Book a Free Call' above or email hello@soulgrowth.ai.",
+    a: "Book a free 20-minute call — we'll show you the bot live and answer any questions. Hit 'Book a Free Call' above, email 8soul.ai8@gmail.com, or call/text 801-647-3408.",
   },
 ];
 
@@ -36,7 +36,7 @@ const SEED_MESSAGES: Message[] = [
   {
     id: 'seed-0',
     role: 'bot',
-    text: "Hi there. I'm your Soul AI assistant — trained on this business. Ask me anything about tours, pricing, gear, or how to book.",
+    text: "Hey — I'm Soul's AI assistant, and I'm a live example of what we build for Maui tourism businesses. Ask me anything about what Soul does, how it works, or what it costs.",
   },
 ];
 
@@ -436,23 +436,19 @@ export function ChatbotWidget({ endpoint = '/api/chat/soul' }: ChatbotWidgetProp
       {/* ── Floating Trigger Button ─────────────────────────────────────── */}
       <button
         onClick={() => setIsOpen(v => !v)}
-        className={pulseNow ? 'chat-pulse' : ''}
         style={{
           position: 'fixed', bottom: '24px', right: '24px', zIndex: 50,
           width: '56px', height: '56px', borderRadius: '50%',
-          background: '#c4620a', border: 'none', cursor: 'pointer',
+          border: 'none', cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 4px 20px rgba(196,98,10,0.35), 0 2px 8px rgba(0,0,0,0.4)',
           WebkitTapHighlightColor: 'transparent',
-          transition: 'transform 200ms ease, background-color 200ms ease, box-shadow 200ms ease',
+          transition: 'transform 200ms ease',
         }}
         onMouseEnter={e => {
           (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.08)';
-          (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 6px 28px rgba(196,98,10,0.5), 0 2px 8px rgba(0,0,0,0.4)';
         }}
         onMouseLeave={e => {
           (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)';
-          (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 4px 20px rgba(196,98,10,0.35), 0 2px 8px rgba(0,0,0,0.4)';
         }}
         aria-label={isOpen ? 'Close chat' : 'Open chat'}
       >
@@ -461,7 +457,12 @@ export function ChatbotWidget({ endpoint = '/api/chat/soul' }: ChatbotWidgetProp
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
           </svg>
         ) : (
-          <YinYangIcon />
+          <span
+            className={`chat-glow${pulseNow ? ' chat-pulse' : ''}`}
+            style={{ borderRadius: '50%', display: 'flex', lineHeight: 0 }}
+          >
+            <YinYangIcon />
+          </span>
         )}
       </button>
     </>

@@ -6,19 +6,25 @@ import { ErrorBoundary } from "@/components/ui/error-boundary";
 /* ─── Module-level constants ──────────────────────────────────────── */
 const PROBLEMS = [
   {
-    stat: "62%",
-    title: "After-Hours Ghost",
-    body: "62% of booking decisions happen outside business hours. Your phone doesn't answer at 11pm.",
+    stat: "78%",
+    title: "First to respond wins",
+    body: "78% of customers buy from the first business that responds — not the best, not the cheapest. The fastest.",
+    source: "Lead Connect Survey",
+    href: "https://www.teamgate.com/blog/lead-response-time-study-speed-impacts-revenue/",
   },
   {
-    stat: "6×",
-    title: "The Repetitive Grind",
-    body: "The same 6 questions, every single day. Time spent answering those isn't being spent on the water.",
+    stat: "8×",
+    title: "Five minutes is everything",
+    body: "Respond within 5 minutes and you're 8× more likely to convert that lead. Every minute after that, the odds collapse.",
+    source: "InsideSales.com Lead Response Study",
+    href: "https://www.callpage.io/blog/posts/improve-lead-response-time",
   },
   {
-    stat: "5 min",
-    title: "Slow Means Lost",
-    body: "A lead without a response in 5 minutes is 80% likely to book with someone else. Speed is everything.",
+    stat: "100×",
+    title: "Speed is contact",
+    body: "You're 100× more likely to reach a prospect responding in 5 minutes versus 30 minutes. Waiting is losing.",
+    source: "MIT Study · Harvard Business Review",
+    href: "https://hbr.org/2011/03/the-short-life-of-online-sales-leads",
   },
 ];
 
@@ -75,7 +81,8 @@ function ProblemSection() {
           gap: '20px',
         }}>
           {problems.map((p) => (
-            <div key={p.stat} className="soul-card" style={{
+            <a key={p.stat} href={p.href} target="_blank" rel="noopener noreferrer" className="soul-card" style={{
+              display: 'block', textDecoration: 'none',
               background: '#060810',
               border: '1px solid rgba(255,255,255,0.06)',
               borderLeft: '4px solid #c4620a',
@@ -98,11 +105,18 @@ function ProblemSection() {
               </div>
               <p style={{
                 fontFamily: 'var(--font-dm-sans)', fontSize: '14px',
-                color: '#8a8a9a', lineHeight: 1.65,
+                color: '#8a8a9a', lineHeight: 1.65, marginBottom: '16px',
               }}>
                 {p.body}
               </p>
-            </div>
+              <div style={{
+                fontFamily: 'var(--font-dm-sans)', fontSize: '11px',
+                color: '#e08820', letterSpacing: '0.06em', fontWeight: 500,
+                borderTop: '1px solid rgba(196,98,10,0.15)', paddingTop: '12px',
+              }}>
+                ↗ {p.source}
+              </div>
+            </a>
           ))}
         </div>
       </div>
@@ -551,30 +565,64 @@ function DemoShowcaseSection() {
 
 /* ─── Pricing Section ─────────────────────────────────────────────── */
 function PricingSection() {
-  const features = [
-    "7-day delivery, guaranteed",
-    "Mobile-first design",
-    "AI trained on your specific business",
-    "Mock chatbot live from day one",
-    "No hidden fees",
+  const basicFeatures = [
+    "Custom-built, brand-trained AI chatbot on your website",
+    "3 manual prompt/instruction edits per month",
+    "Standard maintenance, hosting, and API coverage",
   ];
+
+  const proFeatures = [
+    "Everything in the Basic tier",
+    "Complex, multi-step conversation handling",
+    "Direct calendar syncing for automated bookings",
+    "Custom Client Dashboard — secure login portal",
+    "Real-Time Control: edit bot behavior from your dashboard",
+    "Data & Insights: chat logs, questions, booking analytics",
+    "Priority support and continuous system monitoring",
+  ];
+
+  const CheckIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" style={{ flexShrink: 0, marginTop: '2px' }}>
+      <circle cx="8" cy="8" r="8" fill="rgba(196,98,10,0.15)" />
+      <path d="M4.5 8l2.2 2.2 4-4.5" stroke="#c4620a" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+
+  const ArrowIcon = () => (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true" style={{ flexShrink: 0 }}>
+      <path d="M2.5 7h9M7.5 3.5L11 7l-3.5 3.5" stroke="#e08820" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+
+  const ClockIcon = () => (
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+      <circle cx="6" cy="6" r="5" stroke="#8a8a9a" strokeWidth="1.2" />
+      <path d="M6 3.5v2.5l1.5 1.5" stroke="#8a8a9a" strokeWidth="1.2" strokeLinecap="round" />
+    </svg>
+  );
 
   return (
     <section id="pricing" style={{
       background: '#0d1020', padding: '96px 24px',
       position: 'relative', overflow: 'hidden',
     }}>
-      {/* Centered amber glow */}
+      {/* Background glows */}
       <div style={{
-        position: 'absolute', bottom: '-20%', left: '50%', transform: 'translateX(-50%)',
-        width: '600px', height: '400px', borderRadius: '50%',
+        position: 'absolute', bottom: '-10%', left: '28%',
+        width: '560px', height: '420px', borderRadius: '50%',
         background: 'radial-gradient(ellipse, rgba(196,98,10,0.07) 0%, transparent 70%)',
         pointerEvents: 'none',
       }} />
+      <div style={{
+        position: 'absolute', top: '10%', right: '18%',
+        width: '400px', height: '300px', borderRadius: '50%',
+        background: 'radial-gradient(ellipse, rgba(42,152,152,0.05) 0%, transparent 70%)',
+        pointerEvents: 'none',
+      }} />
 
-      <div style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'center', position: 'relative' }}>
+      <div style={{ maxWidth: '1100px', margin: '0 auto', position: 'relative' }}>
         {/* Header */}
-        <div style={{ marginBottom: '48px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '56px' }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: '7px',
             padding: '4px 13px', borderRadius: '100px', marginBottom: '18px',
@@ -589,86 +637,258 @@ function PricingSection() {
             fontFamily: 'var(--font-outfit)', fontWeight: 800,
             fontSize: 'clamp(1.85rem, 3.5vw, 3.2rem)',
             letterSpacing: '-0.03em', lineHeight: 1.1, color: '#f5f5f0',
+            marginBottom: '16px',
           }}>
-            Simple pricing.<br />No surprises.
+            Two tiers.<br />Total flexibility.
           </h2>
+          <p style={{
+            fontFamily: 'var(--font-dm-sans)', fontSize: 'clamp(15px, 1.8vw, 17px)',
+            color: '#8a8a9a', lineHeight: 1.7, maxWidth: '540px', margin: '0 auto 20px',
+          }}>
+            At Soul, we build AI solutions that grow with you. Every tier includes a dedicated partnership approach — because your AI should be as adaptable as your business.
+          </p>
+          <a href="https://calendly.com/soulai/free-call" target="_blank" rel="noopener noreferrer" style={{
+            display: 'inline-flex', alignItems: 'center', gap: '6px',
+            fontFamily: 'var(--font-dm-sans)', fontSize: '14px', fontWeight: 600,
+            color: '#e08820', textDecoration: 'none',
+            WebkitTapHighlightColor: 'transparent',
+          }}>
+            Not sure where to start? Book a Free 10-Minute Consultation
+            <ArrowIcon />
+          </a>
         </div>
 
-        {/* Card */}
+        {/* Cards grid */}
         <div style={{
-          maxWidth: '480px', margin: '0 auto',
-          background: '#141828',
-          border: '1px solid rgba(255,255,255,0.10)',
-          borderRadius: '22px',
-          padding: '40px 40px 36px',
-          boxShadow: '0 24px 64px rgba(0,0,0,0.5)',
-          position: 'relative',
-          textAlign: 'left',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: '24px',
+          marginBottom: '36px',
         }}>
-          {/* Price */}
-          <div style={{ marginBottom: '28px' }}>
-            <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: '13px', color: '#8a8a9a', marginBottom: '6px' }}>
-              One-time build
-            </div>
-            <div style={{
-              fontFamily: 'var(--font-outfit)', fontWeight: 800,
-              fontSize: '4rem', color: '#c4620a', letterSpacing: '-0.04em', lineHeight: 1,
-              marginBottom: '8px',
-            }}>
-              $1,000
-            </div>
-            <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: '15px', color: '#b0b0be', lineHeight: 1.5 }}>
-              One-time build. Your AI, your site, fully trained.
-            </div>
-          </div>
-
-          {/* Divider */}
-          <div style={{ height: '1px', background: 'rgba(255,255,255,0.07)', marginBottom: '24px' }} />
-
-          {/* Features */}
-          <div style={{ marginBottom: '28px' }}>
-            {features.map((f) => (
-              <div key={f} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '11px' }}>
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <circle cx="8" cy="8" r="8" fill="rgba(196,98,10,0.15)" />
-                  <path d="M4.5 8l2.2 2.2 4-4.5" stroke="#c4620a" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: '14px', color: '#b0b0be' }}>
-                  {f}
-                </span>
+          {/* ── Basic Card ── */}
+          <div style={{
+            background: '#141828',
+            border: '1px solid rgba(255,255,255,0.10)',
+            borderRadius: '22px',
+            padding: '36px 36px 32px',
+            boxShadow: '0 24px 64px rgba(0,0,0,0.4)',
+            display: 'flex', flexDirection: 'column',
+          }}>
+            {/* Tier pill + timeline */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+              <div style={{
+                display: 'inline-flex', alignItems: 'center',
+                padding: '4px 11px', borderRadius: '100px',
+                border: '1px solid rgba(196,98,10,0.3)', background: 'rgba(196,98,10,0.08)',
+                fontFamily: 'var(--font-dm-sans)', fontSize: '11px', fontWeight: 600,
+                color: '#e08820', letterSpacing: '0.07em', textTransform: 'uppercase',
+              }}>Basic</div>
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: '5px',
+                fontFamily: 'var(--font-dm-sans)', fontSize: '12px', color: '#8a8a9a',
+              }}>
+                <ClockIcon />
+                Ready in 3 days
               </div>
-            ))}
+            </div>
+
+            {/* Name */}
+            <div style={{
+              fontFamily: 'var(--font-outfit)', fontWeight: 700,
+              fontSize: '1.15rem', color: '#f5f5f0', marginBottom: '24px',
+            }}>
+              Customer Engagement Bot
+            </div>
+
+            {/* Setup price */}
+            <div style={{ marginBottom: '6px' }}>
+              <div style={{
+                fontFamily: 'var(--font-dm-sans)', fontSize: '11px', color: '#8a8a9a',
+                textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '4px',
+              }}>Setup & Integration</div>
+              <div style={{
+                fontFamily: 'var(--font-outfit)', fontWeight: 800,
+                fontSize: '3.2rem', color: '#c4620a', letterSpacing: '-0.04em', lineHeight: 1,
+              }}>$500</div>
+              <div style={{
+                fontFamily: 'var(--font-dm-sans)', fontSize: '12px', color: '#8a8a9a', marginTop: '5px',
+              }}>$100 upfront deposit · $400 on launch</div>
+            </div>
+
+            <div style={{ height: '1px', background: 'rgba(255,255,255,0.07)', margin: '20px 0' }} />
+
+            {/* Monthly */}
+            <div style={{ marginBottom: '24px' }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '3px' }}>
+                <span style={{ fontFamily: 'var(--font-outfit)', fontWeight: 700, fontSize: '1.25rem', color: '#f5f5f0' }}>$50</span>
+                <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: '13px', color: '#8a8a9a' }}>/mo</span>
+              </div>
+              <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: '12px', color: '#8a8a9a', marginTop: '3px' }}>
+                API usage costs fully included
+              </div>
+            </div>
+
+            {/* Features */}
+            <div style={{ marginBottom: '28px', flex: 1 }}>
+              {basicFeatures.map((f) => (
+                <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '10px' }}>
+                  <CheckIcon />
+                  <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: '13.5px', color: '#b0b0be', lineHeight: 1.55 }}>
+                    {f}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* CTA */}
+            <a href="https://calendly.com/soulai/free-call" target="_blank" rel="noopener noreferrer" style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: '100%', padding: '15px', borderRadius: '12px',
+              background: 'rgba(196,98,10,0.12)', border: '1px solid rgba(196,98,10,0.3)',
+              color: '#e08820', fontFamily: 'var(--font-outfit)', fontWeight: 700, fontSize: '15px',
+              textDecoration: 'none', minHeight: '52px',
+              WebkitTapHighlightColor: 'transparent',
+            }}>
+              Book a Free Consultation
+            </a>
           </div>
 
-          {/* Divider */}
-          <div style={{ height: '1px', background: 'rgba(255,255,255,0.07)', marginBottom: '20px' }} />
+          {/* ── Pro Card ── */}
+          <div style={{
+            background: '#141828',
+            border: '1px solid rgba(196,98,10,0.25)',
+            borderRadius: '22px',
+            padding: '36px 36px 32px',
+            boxShadow: '0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(196,98,10,0.08) inset',
+            display: 'flex', flexDirection: 'column',
+            position: 'relative', overflow: 'hidden',
+          }}>
+            {/* Amber top accent line */}
+            <div style={{
+              position: 'absolute', top: 0, left: 0, right: 0, height: '3px',
+              background: 'linear-gradient(90deg, #c4620a, #e08820, #c4620a)',
+              borderRadius: '22px 22px 0 0',
+            }} />
 
-          {/* Retainer */}
-          <div style={{ marginBottom: '28px' }}>
-            <span style={{ fontFamily: 'var(--font-outfit)', fontWeight: 700, fontSize: '1.1rem', color: '#f5f5f0' }}>then $50<span style={{ fontWeight: 400, fontSize: '14px', color: '#8a8a9a' }}>/mo</span></span>
-            <p style={{ fontFamily: 'var(--font-dm-sans)', fontSize: '13px', color: '#8a8a9a', marginTop: '4px', lineHeight: 1.5 }}>
-              Updates, retraining, and priority support — keeps your bot live and current.
-            </p>
+            {/* Tier pill + Most Popular badge + timeline */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{
+                  display: 'inline-flex', alignItems: 'center',
+                  padding: '4px 11px', borderRadius: '100px',
+                  border: '1px solid rgba(196,98,10,0.3)', background: 'rgba(196,98,10,0.08)',
+                  fontFamily: 'var(--font-dm-sans)', fontSize: '11px', fontWeight: 600,
+                  color: '#e08820', letterSpacing: '0.07em', textTransform: 'uppercase',
+                }}>Pro</div>
+                <div style={{
+                  display: 'inline-flex', alignItems: 'center',
+                  padding: '3px 9px', borderRadius: '100px',
+                  background: '#c4620a',
+                  fontFamily: 'var(--font-dm-sans)', fontSize: '10px', fontWeight: 700,
+                  color: '#f5f5f0', letterSpacing: '0.06em', textTransform: 'uppercase',
+                }}>Most Popular</div>
+              </div>
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: '5px',
+                fontFamily: 'var(--font-dm-sans)', fontSize: '12px', color: '#8a8a9a',
+              }}>
+                <ClockIcon />
+                Ready in 7 days
+              </div>
+            </div>
+
+            {/* Name */}
+            <div style={{
+              fontFamily: 'var(--font-outfit)', fontWeight: 700,
+              fontSize: '1.15rem', color: '#f5f5f0', marginBottom: '24px',
+            }}>
+              Automated Booking & Analytics Engine
+            </div>
+
+            {/* Setup price */}
+            <div style={{ marginBottom: '6px' }}>
+              <div style={{
+                fontFamily: 'var(--font-dm-sans)', fontSize: '11px', color: '#8a8a9a',
+                textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '4px',
+              }}>Setup & Integration</div>
+              <div style={{
+                fontFamily: 'var(--font-outfit)', fontWeight: 800,
+                fontSize: '3.2rem', color: '#c4620a', letterSpacing: '-0.04em', lineHeight: 1,
+              }}>$1,500</div>
+              <div style={{
+                fontFamily: 'var(--font-dm-sans)', fontSize: '12px', color: '#8a8a9a', marginTop: '5px',
+              }}>$200 upfront deposit · $1,300 on launch</div>
+            </div>
+
+            <div style={{ height: '1px', background: 'rgba(255,255,255,0.07)', margin: '20px 0' }} />
+
+            {/* Monthly */}
+            <div style={{ marginBottom: '24px' }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '3px' }}>
+                <span style={{ fontFamily: 'var(--font-outfit)', fontWeight: 700, fontSize: '1.25rem', color: '#f5f5f0' }}>$200</span>
+                <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: '13px', color: '#8a8a9a' }}>/mo</span>
+              </div>
+              <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: '12px', color: '#8a8a9a', marginTop: '3px' }}>
+                API usage costs fully included
+              </div>
+            </div>
+
+            {/* Features */}
+            <div style={{ marginBottom: '28px', flex: 1 }}>
+              {proFeatures.map((f) => (
+                <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '10px' }}>
+                  <CheckIcon />
+                  <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: '13.5px', color: '#b0b0be', lineHeight: 1.55 }}>
+                    {f}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* CTA */}
+            <a href="https://calendly.com/soulai/free-call" target="_blank" rel="noopener noreferrer" className="soul-cta-primary" style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: '100%', padding: '15px', borderRadius: '12px',
+              background: '#c4620a', color: '#f5f5f0',
+              fontFamily: 'var(--font-outfit)', fontWeight: 700, fontSize: '15px',
+              textDecoration: 'none', minHeight: '52px',
+              WebkitTapHighlightColor: 'transparent',
+            }}>
+              Book a Free Consultation
+            </a>
           </div>
+        </div>
 
-          {/* CTA */}
-          <a href="https://calendly.com/soulai/free-call" target="_blank" rel="noopener noreferrer" className="soul-cta-primary" style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            width: '100%', padding: '15px', borderRadius: '12px',
-            background: '#c4620a', color: '#f5f5f0',
-            fontFamily: 'var(--font-outfit)', fontWeight: 700, fontSize: '15px',
-            textDecoration: 'none', minHeight: '52px',
+        {/* Adaptable Pricing callout */}
+        <div style={{
+          maxWidth: '680px', margin: '0 auto',
+          padding: '32px 36px',
+          border: '1px solid rgba(255,255,255,0.07)',
+          borderRadius: '18px',
+          background: 'rgba(255,255,255,0.02)',
+          textAlign: 'center',
+        }}>
+          <div style={{
+            fontFamily: 'var(--font-outfit)', fontWeight: 700,
+            fontSize: '1.1rem', color: '#f5f5f0', marginBottom: '10px',
+          }}>
+            Adaptable Pricing for Adaptable Work
+          </div>
+          <p style={{
+            fontFamily: 'var(--font-dm-sans)', fontSize: '14px', color: '#8a8a9a',
+            lineHeight: 1.7, marginBottom: '16px',
+          }}>
+            Don&apos;t need the whole Pro package, but want more than Basic? We are flexible. If you want specific features from the Pro tier — like the custom dashboard — without the full automated booking engine, let&apos;s talk. We can build a custom hybrid tier that fits your exact operational needs and budget.
+          </p>
+          <a href="https://calendly.com/soulai/free-call" target="_blank" rel="noopener noreferrer" style={{
+            display: 'inline-flex', alignItems: 'center', gap: '6px',
+            fontFamily: 'var(--font-dm-sans)', fontSize: '14px', fontWeight: 600,
+            color: '#e08820', textDecoration: 'none',
             WebkitTapHighlightColor: 'transparent',
-          }}
-          >
-            Book a Free Call
+          }}>
+            Book your Free 10-Minute Consultation today
+            <ArrowIcon />
           </a>
-
-          <div style={{ textAlign: 'center', marginTop: '12px' }}>
-            <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: '12px', color: '#8a8a9a' }}>
-              Free 20-min call. No commitment.
-            </span>
-          </div>
         </div>
       </div>
     </section>
@@ -737,9 +957,9 @@ function CTAFooter() {
             Book Your Free Call
           </a>
 
-          <a href="mailto:hello@soulgrowth.ai" className="soul-link-muted" style={{
+          <a href="mailto:8soul.ai8@gmail.com" style={{
             display: 'inline-flex', alignItems: 'center', gap: '7px',
-            fontFamily: 'var(--font-dm-sans)', fontSize: '14px', color: '#8a8a9a',
+            fontFamily: 'var(--font-dm-sans)', fontSize: '14px', color: '#e08820',
             textDecoration: 'none', WebkitTapHighlightColor: 'transparent',
             minHeight: '44px',
           }}
@@ -747,7 +967,20 @@ function CTAFooter() {
             <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
-            hello@soulgrowth.ai
+            8soul.ai8@gmail.com
+          </a>
+
+          <a href="tel:+18016473408" style={{
+            display: 'inline-flex', alignItems: 'center', gap: '7px',
+            fontFamily: 'var(--font-dm-sans)', fontSize: '14px', color: '#e08820',
+            textDecoration: 'none', WebkitTapHighlightColor: 'transparent',
+            minHeight: '44px',
+          }}
+          >
+            <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M3 9a2 2 0 00-2 2v.5a16 16 0 0016 16H17a2 2 0 002-2v-3.5a1 1 0 00-1-1h-3a1 1 0 00-1 1v1a11 11 0 01-11-11v-1a1 1 0 00-1-1H4a1 1 0 00-1 1V9z" />
+            </svg>
+            801-647-3408
           </a>
         </div>
       </div>
