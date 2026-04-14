@@ -20,15 +20,15 @@ const SOUL_FAQ = [
   },
   {
     q: "How much does it cost?",
-    a: "$1,000 to build and launch. Then $50/month to keep it live — includes updates, retraining, and priority support.",
+    a: "Basic is $500 setup plus $50/month — handles FAQs and inquiries 24/7, ready in 3 days. Pro is $1,500 setup plus $200/month — adds automated bookings, dashboard, and analytics, ready in 7 days.",
   },
   {
     q: "How fast does it launch?",
-    a: "7 days from kickoff to live. We gather your info, build the bot, train it on your business, and hand it over ready to go.",
+    a: "Basic launches in 3 days. Pro launches in 7 days. We gather your info, build the bot, train it on your business, and hand it over ready to go.",
   },
   {
     q: "How do I get started?",
-    a: "Book a free 20-minute call — we'll show you the bot live and answer any questions. Hit 'Book a Free Call' above, email 8soul.ai8@gmail.com, or call/text 801-647-3408.",
+    a: "Book a free 10-minute demo — we'll show you the bot live and answer any questions. Hit 'Book a Free Call' above, email 8soul.ai8@gmail.com, or call/text 801-647-3408.",
   },
 ];
 
@@ -36,7 +36,7 @@ const SEED_MESSAGES: Message[] = [
   {
     id: 'seed-0',
     role: 'bot',
-    text: "Hey — I'm Soul's AI assistant, and I'm a live example of what we build for Maui tourism businesses. Ask me anything about what Soul does, how it works, or what it costs.",
+    text: "Hey — you're talking to a Soul bot right now. This is exactly what we build for tourism businesses. What kind of business are you running?",
   },
 ];
 
