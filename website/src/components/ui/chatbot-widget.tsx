@@ -192,12 +192,12 @@ export function ChatbotWidget({ endpoint = '/api/chat/soul' }: ChatbotWidgetProp
         role: 'bot',
         text: reply,
       }]);
-      // Update conversation history (last 10 messages = 5 exchanges)
+      // Update conversation history (last 20 messages = 10 exchanges)
       setHistory(prev => [
         ...prev,
         { role: 'user' as const, content: text },
         { role: 'assistant' as const, content: reply },
-      ].slice(-10));
+      ].slice(-20));
     } catch {
       // On failure, fall back to FAQ mode
       setMode('faq');
