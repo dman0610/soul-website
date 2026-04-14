@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Edit(~/.claude/skills/algorithmic-art/**)"
+      "Edit(~/.claude/skills/algorithmic-art/**)",
+      "Bash(git push:*)"
     ],
     "additionalDirectories": [
       "C:\\Users\\dmanf\\.claude\\skills",

@@ -89,7 +89,7 @@ function SoulNavbar() {
       backdropFilter: scrolled ? 'blur(14px)' : 'none',
       WebkitBackdropFilter: scrolled ? 'blur(14px)' : 'none',
       borderBottom: scrolled ? '1px solid rgba(255,255,255,0.06)' : '1px solid transparent',
-      transition: 'background-color 350ms ease, border-color 350ms ease, backdrop-filter 350ms ease',
+      transition: 'background-color 350ms ease, border-color 350ms ease',
     }}>
       <div style={{
         maxWidth: '1200px', margin: '0 auto', padding: '0 24px',
@@ -189,7 +189,7 @@ export const HeroSection = () => {
     if (!el) return;
     const observer = new IntersectionObserver(
       ([entry]) => setSplineActive(entry.isIntersecting),
-      { threshold: 0 }
+      { threshold: 0, rootMargin: '400px' }
     );
     observer.observe(el);
     return () => observer.disconnect();
