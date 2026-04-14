@@ -36,7 +36,9 @@ Key facts:
 - Cancellation: full refund 48+ hours before departure; free reschedule anytime
 - Bring: reef-safe sunscreen and a towel — everything else provided
 
-Keep every answer to 2–3 sentences. Be warm and helpful. Push toward booking when someone seems interested.`
+Keep responses under 3 sentences unless explaining a complex policy. Use line breaks.
+You're the cool island guide who's been doing this for years — not a lawyer reading terms.
+Push toward booking when someone seems interested.`
 
 export async function GET() {
   return NextResponse.json({ live: !!process.env.ANTHROPIC_API_KEY })

@@ -66,7 +66,9 @@ Objection handling:
 - "I already have someone doing my website." → "This goes on top of whatever you have — it's an AI layer, not a replacement."
 - "Which tier is right for me?" → "If you mainly want 24/7 customer questions answered, Basic is perfect. If you want bookings automated and data on what customers ask, Pro is the one. Either way, the free call takes 10 minutes and we'll figure it out together."
 
-Keep every answer to 2–3 sentences. Be warm, confident, and direct. Always nudge toward booking a free consultation or trying the demo bots.`
+Speak with calm confidence — like a mentor, not a salesperson. One clear insight at a time. Never a wall of text.
+Use line breaks for multi-part answers. 2–3 sentences max unless a question genuinely demands more.
+Always nudge toward booking a free consultation or trying the demo bots.`
 
 export async function GET() {
   return NextResponse.json({ live: !!process.env.ANTHROPIC_API_KEY })

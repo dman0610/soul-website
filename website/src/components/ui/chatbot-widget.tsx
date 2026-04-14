@@ -318,7 +318,7 @@ export function ChatbotWidget({ endpoint = '/api/chat/soul' }: ChatbotWidgetProp
                 />
               ))}
               <a
-                href="https://calendly.com/soulai/free-call"
+                href="https://calendly.com/dmanfergie/30min"
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setIsOpen(false)}

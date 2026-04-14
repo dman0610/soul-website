@@ -647,7 +647,7 @@ function PricingSection() {
           }}>
             At Soul, we build AI solutions that grow with you. Every tier includes a dedicated partnership approach — because your AI should be as adaptable as your business.
           </p>
-          <a href="https://calendly.com/soulai/free-call" target="_blank" rel="noopener noreferrer" style={{
+          <a href="https://calendly.com/dmanfergie/30min" target="_blank" rel="noopener noreferrer" style={{
             display: 'inline-flex', alignItems: 'center', gap: '6px',
             fontFamily: 'var(--font-dm-sans)', fontSize: '14px', fontWeight: 600,
             color: '#e08820', textDecoration: 'none',
@@ -741,7 +741,7 @@ function PricingSection() {
             </div>
 
             {/* CTA */}
-            <a href="https://calendly.com/soulai/free-call" target="_blank" rel="noopener noreferrer" style={{
+            <a href="https://calendly.com/dmanfergie/30min" target="_blank" rel="noopener noreferrer" style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               width: '100%', padding: '15px', borderRadius: '12px',
               background: 'rgba(196,98,10,0.12)', border: '1px solid rgba(196,98,10,0.3)',
@@ -846,7 +846,7 @@ function PricingSection() {
             </div>
 
             {/* CTA */}
-            <a href="https://calendly.com/soulai/free-call" target="_blank" rel="noopener noreferrer" className="soul-cta-primary" style={{
+            <a href="https://calendly.com/dmanfergie/30min" target="_blank" rel="noopener noreferrer" className="soul-cta-primary" style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               width: '100%', padding: '15px', borderRadius: '12px',
               background: '#c4620a', color: '#f5f5f0',
@@ -880,7 +880,7 @@ function PricingSection() {
           }}>
             Don&apos;t need the whole Pro package, but want more than Basic? We are flexible. If you want specific features from the Pro tier — like the custom dashboard — without the full automated booking engine, let&apos;s talk. We can build a custom hybrid tier that fits your exact operational needs and budget.
           </p>
-          <a href="https://calendly.com/soulai/free-call" target="_blank" rel="noopener noreferrer" style={{
+          <a href="https://calendly.com/dmanfergie/30min" target="_blank" rel="noopener noreferrer" style={{
             display: 'inline-flex', alignItems: 'center', gap: '6px',
             fontFamily: 'var(--font-dm-sans)', fontSize: '14px', fontWeight: 600,
             color: '#e08820', textDecoration: 'none',
@@ -945,7 +945,7 @@ function CTAFooter() {
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
-          <a href="https://calendly.com/soulai/free-call" target="_blank" rel="noopener noreferrer" className="soul-cta-primary" style={{
+          <a href="https://calendly.com/dmanfergie/30min" target="_blank" rel="noopener noreferrer" className="soul-cta-primary" style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             padding: '16px 40px', borderRadius: '100px',
             background: '#c4620a', color: '#f5f5f0',

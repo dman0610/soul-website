@@ -128,7 +128,7 @@ function SoulNavbar() {
               {label}
             </a>
           ))}
-          <a href="#contact" style={{
+          <a href="https://calendly.com/dmanfergie/30min" target="_blank" rel="noopener noreferrer" style={{
             fontFamily: 'var(--font-outfit)', fontWeight: 600, fontSize: '14px',
             color: '#f5f5f0', textDecoration: 'none', padding: '9px 22px',
             borderRadius: '100px', background: '#c4620a', minHeight: '44px',
@@ -173,7 +173,7 @@ function SoulNavbar() {
         <div style={{ padding: '16px 24px 20px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
           <a href="#how-it-works" onClick={() => setIsMobileOpen(false)} style={{ fontFamily: 'var(--font-dm-sans)', fontSize: '15px', color: '#8a8a9a', textDecoration: 'none', minHeight: '44px', display: 'flex', alignItems: 'center', WebkitTapHighlightColor: 'transparent' }}>How It Works</a>
           <a href="#pricing" onClick={() => setIsMobileOpen(false)} style={{ fontFamily: 'var(--font-dm-sans)', fontSize: '15px', color: '#8a8a9a', textDecoration: 'none', minHeight: '44px', display: 'flex', alignItems: 'center', WebkitTapHighlightColor: 'transparent' }}>Pricing</a>
-          <a href="#contact" onClick={() => setIsMobileOpen(false)} style={{ fontFamily: 'var(--font-outfit)', fontWeight: 600, fontSize: '15px', color: '#f5f5f0', textDecoration: 'none', padding: '12px 22px', borderRadius: '100px', background: '#c4620a', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minHeight: '44px', WebkitTapHighlightColor: 'transparent', marginTop: '4px' }}>Book a Free Call</a>
+          <a href="https://calendly.com/dmanfergie/30min" target="_blank" rel="noopener noreferrer" onClick={() => setIsMobileOpen(false)} style={{ fontFamily: 'var(--font-outfit)', fontWeight: 600, fontSize: '15px', color: '#f5f5f0', textDecoration: 'none', padding: '12px 22px', borderRadius: '100px', background: '#c4620a', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minHeight: '44px', WebkitTapHighlightColor: 'transparent', marginTop: '4px' }}>Book a Free Call</a>
         </div>
       </div>
     </nav>

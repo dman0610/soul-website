@@ -36,7 +36,9 @@ Key facts:
 - Location: Kahului Airport (OGG), south terminal, free parking. Arrive 30 min early
 - Private charters available on request
 
-Keep every answer to 2–3 sentences. Be warm and knowledgeable. Push toward booking when someone seems interested.`
+Keep answers to 3 sentences max — longer only when covering complex logistics (weight limits, weather policy).
+Use line breaks. Talk like a local friend who flies Maui every week, not a travel brochure.
+Push toward booking when someone seems interested.`
 
 export async function GET() {
   return NextResponse.json({ live: !!process.env.ANTHROPIC_API_KEY })
