@@ -573,6 +573,7 @@ function PricingSection() {
 
   const proFeatures = [
     "Everything in the Basic tier",
+    "Custom website — fully designed and built for your business",
     "Complex, multi-step conversation handling",
     "Direct calendar syncing for automated bookings",
     "Custom Client Dashboard — secure login portal",
@@ -653,7 +654,7 @@ function PricingSection() {
             color: '#e08820', textDecoration: 'none',
             WebkitTapHighlightColor: 'transparent',
           }}>
-            Not sure where to start? Book a Free 10-Minute Consultation
+            Not sure where to start? Book a Free 15-Minute Consultation
             <ArrowIcon />
           </a>
         </div>
@@ -712,7 +713,7 @@ function PricingSection() {
               }}>$500</div>
               <div style={{
                 fontFamily: 'var(--font-dm-sans)', fontSize: '12px', color: '#8a8a9a', marginTop: '5px',
-              }}>$100 upfront deposit · $400 on launch</div>
+              }}>$250 upfront deposit · $250 on completion</div>
             </div>
 
             <div style={{ height: '1px', background: 'rgba(255,255,255,0.07)', margin: '20px 0' }} />
@@ -817,7 +818,7 @@ function PricingSection() {
               }}>$1,500</div>
               <div style={{
                 fontFamily: 'var(--font-dm-sans)', fontSize: '12px', color: '#8a8a9a', marginTop: '5px',
-              }}>$200 upfront deposit · $1,300 on launch</div>
+              }}>$500 upfront deposit · $1,000 on launch</div>
             </div>
 
             <div style={{ height: '1px', background: 'rgba(255,255,255,0.07)', margin: '20px 0' }} />
@@ -886,7 +887,7 @@ function PricingSection() {
             color: '#e08820', textDecoration: 'none',
             WebkitTapHighlightColor: 'transparent',
           }}>
-            Book your Free 10-Minute Consultation today
+            Book your Free 15-Minute Consultation today
             <ArrowIcon />
           </a>
         </div>
@@ -940,7 +941,7 @@ function CTAFooter() {
           fontFamily: 'var(--font-dm-sans)', fontSize: '16px',
           color: '#8a8a9a', lineHeight: 1.75, marginBottom: '40px',
         }}>
-          Free 20-minute call. I&apos;ll show you exactly what it looks like
+          Free 15-minute call. I&apos;ll show you exactly what it looks like
           for your business — no slides, no pitch deck, just a live demo.
         </p>
 
