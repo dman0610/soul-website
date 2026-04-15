@@ -20,13 +20,13 @@ const styles = `
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
-  html { scroll-behavior: smooth; }
+  /* scroll-behavior: smooth removed — causes mobile scroll jank at boundaries */
 
   body {
     background: var(--bg);
     color: var(--white);
     font-family: var(--font-body);
-    overflow-x: hidden;
+    overflow-x: clip;
   }
 
   h1, h2, h3, h4 {
@@ -1286,7 +1286,7 @@ function ChatWidget() {
     setBubbleMsg(goodbyes[Math.floor(Math.random() * goodbyes.length)]);
     setShowBubble(true);
     if (goodbyeTimerRef.current) clearTimeout(goodbyeTimerRef.current);
-    goodbyeTimerRef.current = setTimeout(() => setShowBubble(false), 10000);
+    goodbyeTimerRef.current = setTimeout(() => setShowBubble(false), 7000);
   }
 
   return (

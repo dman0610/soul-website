@@ -215,7 +215,7 @@ export const HeroSection = () => {
   return (
     <div ref={sectionRef} style={{ position: 'relative' }}>
       <SoulNavbar />
-      <div style={{ position: 'relative', minHeight: '100dvh', overflow: 'hidden' }}>
+      <div style={{ position: 'relative', minHeight: '100dvh', overflow: 'clip' }}>
         {/* Spline 3D bg — unmounted when hero is off screen */}
         <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'auto' }}>
           {splineActive ? (

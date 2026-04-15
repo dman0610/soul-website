@@ -147,7 +147,7 @@ function Navbar() {
 function HeroSection() {
   return (
     <section style={{
-      position: "relative", minHeight: "100dvh", overflow: "hidden",
+      position: "relative", minHeight: "100dvh", overflow: "clip",
       display: "flex", alignItems: "center", justifyContent: "center",
     }}>
       {/* Hero image */}
@@ -881,7 +881,7 @@ function ChatWidget() {
     setBubbleMsg(goodbyes[Math.floor(Math.random() * goodbyes.length)]);
     setShowBubble(true);
     if (goodbyeTimerRef.current) clearTimeout(goodbyeTimerRef.current);
-    goodbyeTimerRef.current = setTimeout(() => setShowBubble(false), 10000);
+    goodbyeTimerRef.current = setTimeout(() => setShowBubble(false), 7000);
   }
 
   return (
@@ -890,7 +890,7 @@ function ChatWidget() {
       {open && (
         <div style={{
           position: "fixed", bottom: "92px", right: "24px",
-          width: "min(360px, calc(100vw - 48px))",
+          width: "min(360px, calc(100% - 48px))",
           background: "#0d2540",
           border: "1px solid rgba(42,152,152,0.25)",
           borderRadius: "20px",
@@ -1123,7 +1123,7 @@ export default function SnorkelPage() {
   return (
     <>
       <style>{lightRayCSS}</style>
-      <main style={{ background: "#0a1628", overflowX: "hidden" }}>
+      <main style={{ background: "#0a1628", overflowX: "clip" }}>
         <Navbar />
         <HeroSection />
         <ToursSection />

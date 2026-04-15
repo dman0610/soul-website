@@ -991,7 +991,7 @@ function CTAFooter() {
 /* ─── Page ────────────────────────────────────────────────────────── */
 export default function Home() {
   return (
-    <main style={{ background: '#060810', overflowX: 'hidden', position: 'relative' }}>
+    <main style={{ background: '#060810', overflowX: 'clip', position: 'relative' }}>
       <HeroSection />
       <BackgroundPaths title="Never Miss A Booking" />
       <ProblemSection />

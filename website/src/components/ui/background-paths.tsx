@@ -83,7 +83,7 @@ export function BackgroundPaths({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        overflow: "hidden",
+        overflow: "clip",
         background:
           "radial-gradient(ellipse at 25% 60%, rgba(196,98,10,0.09) 0%, transparent 55%), radial-gradient(ellipse at 75% 25%, rgba(42,152,152,0.06) 0%, transparent 50%), #060810",
       }}

@@ -201,7 +201,7 @@ export function ChatbotWidget({ endpoint = '/api/chat/soul' }: ChatbotWidgetProp
             right: '24px',
             left: 'auto',
             width: '360px',
-            maxWidth: 'calc(100vw - 32px)',
+            maxWidth: 'calc(100% - 32px)',
             zIndex: 51,
             background: '#141828',
             border: '1px solid rgba(255,255,255,0.10)',

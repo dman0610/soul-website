@@ -29,7 +29,7 @@ export default function RootLayout({
       lang="en"
       className={`${outfit.variable} ${dmSans.variable} antialiased`}
     >
-      <body className="flex flex-col bg-[#060810]">{children}</body>
+      <body className="bg-[#060810]">{children}</body>
     </html>
   );
 }
