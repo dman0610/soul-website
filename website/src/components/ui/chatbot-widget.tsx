@@ -112,6 +112,7 @@ export function ChatbotWidget({ endpoint = '/api/chat/soul' }: ChatbotWidgetProp
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [userMsgCount, setUserMsgCount] = useState(0);
   const [pulsed, setPulsed] = useState(false);
   const [pulseNow, setPulseNow] = useState(false);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
@@ -156,6 +157,7 @@ export function ChatbotWidget({ endpoint = '/api/chat/soul' }: ChatbotWidgetProp
 
     const userMsg: Message = { id: Date.now().toString(), role: 'user', text };
     setMessages(prev => [...prev, userMsg]);
+    setUserMsgCount(prev => prev + 1);
     setInput('');
     setIsLoading(true);
 
@@ -347,45 +349,75 @@ export function ChatbotWidget({ endpoint = '/api/chat/soul' }: ChatbotWidgetProp
               </div>
 
               {/* Input row */}
-              <div style={{
-                padding: '12px 16px', borderTop: '1px solid rgba(255,255,255,0.07)',
-                display: 'flex', gap: '8px', alignItems: 'center',
-              }}>
-                <input
-                  ref={inputRef}
-                  value={input}
-                  onChange={e => setInput(e.target.value)}
-                  onKeyDown={onKeyDown}
-                  placeholder="Ask anything about this business..."
-                  disabled={isLoading}
-                  style={{
-                    flex: 1, background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid rgba(255,255,255,0.09)', borderRadius: '12px',
-                    padding: '10px 14px', color: '#f5f5f0',
-                    fontFamily: 'var(--font-dm-sans)', fontSize: '13.5px',
-                    outline: 'none', transition: 'border-color 150ms ease', minHeight: '44px',
-                  }}
-                  onFocus={e => (e.target as HTMLInputElement).style.borderColor = 'rgba(196,98,10,0.4)'}
-                  onBlur={e => (e.target as HTMLInputElement).style.borderColor = 'rgba(255,255,255,0.09)'}
-                />
-                <button
-                  onClick={send}
-                  disabled={!input.trim() || isLoading}
-                  style={{
-                    width: '44px', height: '44px', borderRadius: '12px',
-                    background: input.trim() && !isLoading ? '#c4620a' : 'rgba(196,98,10,0.2)',
-                    border: 'none', cursor: input.trim() && !isLoading ? 'pointer' : 'not-allowed',
-                    color: '#f5f5f0', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    flexShrink: 0, WebkitTapHighlightColor: 'transparent',
-                    transition: 'background-color 200ms ease',
-                  }}
-                  aria-label="Send message"
-                >
-                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14M12 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
+              {userMsgCount >= 50 ? (
+                <div style={{
+                  padding: '14px 16px', borderTop: '1px solid rgba(255,255,255,0.07)',
+                  display: 'flex', flexDirection: 'column', gap: '10px',
+                }}>
+                  <p style={{
+                    margin: 0, fontFamily: 'var(--font-dm-sans)', fontSize: '13px',
+                    color: '#8a8a9a', textAlign: 'center', lineHeight: 1.5,
+                  }}>
+                    You've reached the demo limit — book a call to keep chatting.
+                  </p>
+                  <a
+                    href="https://calendly.com/dmanfergie/30min"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'block', textAlign: 'center', padding: '11px 16px',
+                      borderRadius: '12px', background: '#c4620a', color: '#f5f5f0',
+                      fontFamily: 'var(--font-dm-sans)', fontSize: '13.5px', fontWeight: 600,
+                      textDecoration: 'none', WebkitTapHighlightColor: 'transparent',
+                      transition: 'background-color 150ms ease',
+                    }}
+                    onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.backgroundColor = '#d4720a'}
+                    onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.backgroundColor = '#c4620a'}
+                  >
+                    Book a Free Call →
+                  </a>
+                </div>
+              ) : (
+                <div style={{
+                  padding: '12px 16px', borderTop: '1px solid rgba(255,255,255,0.07)',
+                  display: 'flex', gap: '8px', alignItems: 'center',
+                }}>
+                  <input
+                    ref={inputRef}
+                    value={input}
+                    onChange={e => setInput(e.target.value)}
+                    onKeyDown={onKeyDown}
+                    placeholder="Ask anything about this business..."
+                    disabled={isLoading}
+                    style={{
+                      flex: 1, background: 'rgba(255,255,255,0.05)',
+                      border: '1px solid rgba(255,255,255,0.09)', borderRadius: '12px',
+                      padding: '10px 14px', color: '#f5f5f0',
+                      fontFamily: 'var(--font-dm-sans)', fontSize: '13.5px',
+                      outline: 'none', transition: 'border-color 150ms ease', minHeight: '44px',
+                    }}
+                    onFocus={e => (e.target as HTMLInputElement).style.borderColor = 'rgba(196,98,10,0.4)'}
+                    onBlur={e => (e.target as HTMLInputElement).style.borderColor = 'rgba(255,255,255,0.09)'}
+                  />
+                  <button
+                    onClick={send}
+                    disabled={!input.trim() || isLoading}
+                    style={{
+                      width: '44px', height: '44px', borderRadius: '12px',
+                      background: input.trim() && !isLoading ? '#c4620a' : 'rgba(196,98,10,0.2)',
+                      border: 'none', cursor: input.trim() && !isLoading ? 'pointer' : 'not-allowed',
+                      color: '#f5f5f0', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      flexShrink: 0, WebkitTapHighlightColor: 'transparent',
+                      transition: 'background-color 200ms ease',
+                    }}
+                    aria-label="Send message"
+                  >
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
+              )}
             </>
           )}
 

@@ -1191,6 +1191,7 @@ function ChatWidget() {
   const [messages, setMessages] = useState([
     { type: "bot", text: "Aloha! I'm Leilani, your Maui Air Tours concierge. Ask me about routes, pricing, or how to reserve your flight." },
   ]);
+  const [userMsgCount, setUserMsgCount] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Check Claude API status on mount — upgrades to live when ANTHROPIC_API_KEY is set
@@ -1248,6 +1249,7 @@ function ChatWidget() {
     const text = input.trim();
     if (!text || isLoading) return;
     setMessages(prev => [...prev, { type: "user", text }]);
+    setUserMsgCount(prev => prev + 1);
     setInput("");
     setIsLoading(true);
     try {
@@ -1379,21 +1381,41 @@ function ChatWidget() {
                 )}
                 <div ref={messagesEndRef} />
               </div>
-              <div className="chat-input-row">
-                <input
-                  className="chat-input"
-                  placeholder="Ask about flights, pricing, availability..."
-                  value={input}
-                  onChange={e => setInput(e.target.value)}
-                  onKeyDown={e => { if (e.key === "Enter") handleSend(); }}
-                  disabled={isLoading}
-                />
-                <button className="chat-send" onClick={handleSend} disabled={!input.trim() || isLoading} aria-label="Send">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path d="M14 2L2 7L7 9L9 14L14 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
-                  </svg>
-                </button>
-              </div>
+              {userMsgCount >= 50 ? (
+                <div style={{ padding: "14px 16px", borderTop: "1px solid rgba(255,255,255,0.07)", display: "flex", flexDirection: "column" as const, gap: "10px" }}>
+                  <p style={{ margin: 0, fontFamily: "var(--font-dm-sans)", fontSize: "13px", color: "var(--muted)", textAlign: "center" as const, lineHeight: 1.5 }}>
+                    You've reached the demo limit — book a call to keep chatting.
+                  </p>
+                  <a
+                    href="tel:+18085550173"
+                    style={{
+                      display: "block", textAlign: "center" as const, padding: "11px 16px",
+                      borderRadius: "8px", background: "var(--amber)", color: "#f5f5f0",
+                      fontFamily: "var(--font-dm-sans)", fontSize: "13.5px", fontWeight: 600,
+                      textDecoration: "none", WebkitTapHighlightColor: "transparent",
+                      transition: "background-color 150ms ease",
+                    }}
+                  >
+                    Call to Book: (808) 555-0173 →
+                  </a>
+                </div>
+              ) : (
+                <div className="chat-input-row">
+                  <input
+                    className="chat-input"
+                    placeholder="Ask about flights, pricing, availability..."
+                    value={input}
+                    onChange={e => setInput(e.target.value)}
+                    onKeyDown={e => { if (e.key === "Enter") handleSend(); }}
+                    disabled={isLoading}
+                  />
+                  <button className="chat-send" onClick={handleSend} disabled={!input.trim() || isLoading} aria-label="Send">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M14 2L2 7L7 9L9 14L14 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
+                </div>
+              )}
             </>
           )}
         </div>

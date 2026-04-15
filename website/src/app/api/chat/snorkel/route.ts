@@ -11,8 +11,8 @@ export const dynamic = 'force-dynamic'
 
 // Per-IP rate limiter — in-memory, resets every 60s per IP
 const rateLimits = new Map<string, { count: number; resetAt: number }>()
-const RATE_LIMIT = 15
-const RATE_WINDOW = 60_000
+const RATE_LIMIT = 50
+const RATE_WINDOW = 30 * 60_000 // 30 minutes
 
 function checkRateLimit(ip: string): boolean {
   const now = Date.now()
@@ -83,11 +83,14 @@ export async function POST(req: NextRequest) {
     const message: string = body?.message
     const history: Array<{ role: 'user' | 'assistant'; content: string }> = body?.history ?? []
 
-    if (!message || typeof message !== 'string') {
+    if (!message || typeof message !== 'string' || message.length > 800) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
     }
 
-    const trimmedHistory = history.slice(-10)
+    const safeHistory = Array.isArray(history) ? history.slice(-10) : []
+    const trimmedHistory = safeHistory.filter(
+      (m) => m && typeof m.role === 'string' && typeof m.content === 'string'
+    )
     const messages = [
       ...trimmedHistory,
       { role: 'user' as const, content: message },

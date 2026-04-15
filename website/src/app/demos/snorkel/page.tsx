@@ -788,6 +788,7 @@ function ChatWidget() {
   const [messages, setMessages] = useState([
     { from: "bot", text: "Aloha! I'm Kai, your Maui Snorkel Co. assistant. Ask me anything about tours, gear, or availability." },
   ]);
+  const [userMsgCount, setUserMsgCount] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Check Claude API status on mount — upgrades to live when ANTHROPIC_API_KEY is set
@@ -843,6 +844,7 @@ function ChatWidget() {
     const text = input.trim();
     if (!text || isLoading) return;
     setMessages(prev => [...prev, { from: "user", text }]);
+    setUserMsgCount(prev => prev + 1);
     setInput("");
     setIsLoading(true);
     try {
@@ -1007,34 +1009,54 @@ function ChatWidget() {
                 )}
                 <div ref={messagesEndRef} />
               </div>
-              <div style={{ padding: "12px 16px 16px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-                <div style={{ display: "flex", gap: "8px", alignItems: "center", background: "#1a3550", borderRadius: "12px", padding: "8px 8px 8px 14px", border: "1px solid rgba(42,152,152,0.15)" }}>
-                  <input
-                    value={input}
-                    onChange={e => setInput(e.target.value)}
-                    onKeyDown={e => { if (e.key === "Enter") handleSend(); }}
-                    placeholder="Ask about tours, gear, availability…"
-                    disabled={isLoading}
-                    style={{ flex: 1, background: "none", border: "none", outline: "none", fontFamily: "var(--font-dm-sans)", fontSize: "13px", color: "#f5f5f0", minHeight: "44px" }}
-                  />
-                  <button
-                    onClick={handleSend}
-                    disabled={!input.trim() || isLoading}
+              {userMsgCount >= 50 ? (
+                <div style={{ padding: "14px 16px 16px", borderTop: "1px solid rgba(255,255,255,0.06)", display: "flex", flexDirection: "column" as const, gap: "10px" }}>
+                  <p style={{ margin: 0, fontFamily: "var(--font-dm-sans)", fontSize: "13px", color: "#8a9aaa", textAlign: "center" as const, lineHeight: 1.5 }}>
+                    You've reached the demo limit — book a call to keep chatting.
+                  </p>
+                  <a
+                    href="tel:+18085550142"
                     style={{
-                      background: input.trim() && !isLoading ? "#2a9898" : "rgba(42,152,152,0.3)",
-                      border: "none", borderRadius: "8px", width: "36px", height: "36px",
-                      cursor: input.trim() && !isLoading ? "pointer" : "not-allowed",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      flexShrink: 0, WebkitTapHighlightColor: "transparent",
+                      display: "block", textAlign: "center" as const, padding: "11px 16px",
+                      borderRadius: "12px", background: "#2a9898", color: "#f5f5f0",
+                      fontFamily: "var(--font-dm-sans)", fontSize: "13.5px", fontWeight: 600,
+                      textDecoration: "none", WebkitTapHighlightColor: "transparent",
                       transition: "background-color 150ms ease",
                     }}
                   >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0a1628" strokeWidth="2.5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z" />
-                    </svg>
-                  </button>
+                    Call to Book: (808) 555-0142 →
+                  </a>
                 </div>
-              </div>
+              ) : (
+                <div style={{ padding: "12px 16px 16px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                  <div style={{ display: "flex", gap: "8px", alignItems: "center", background: "#1a3550", borderRadius: "12px", padding: "8px 8px 8px 14px", border: "1px solid rgba(42,152,152,0.15)" }}>
+                    <input
+                      value={input}
+                      onChange={e => setInput(e.target.value)}
+                      onKeyDown={e => { if (e.key === "Enter") handleSend(); }}
+                      placeholder="Ask about tours, gear, availability…"
+                      disabled={isLoading}
+                      style={{ flex: 1, background: "none", border: "none", outline: "none", fontFamily: "var(--font-dm-sans)", fontSize: "13px", color: "#f5f5f0", minHeight: "44px" }}
+                    />
+                    <button
+                      onClick={handleSend}
+                      disabled={!input.trim() || isLoading}
+                      style={{
+                        background: input.trim() && !isLoading ? "#2a9898" : "rgba(42,152,152,0.3)",
+                        border: "none", borderRadius: "8px", width: "36px", height: "36px",
+                        cursor: input.trim() && !isLoading ? "pointer" : "not-allowed",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        flexShrink: 0, WebkitTapHighlightColor: "transparent",
+                        transition: "background-color 150ms ease",
+                      }}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0a1628" strokeWidth="2.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              )}
             </>
           )}
         </div>
