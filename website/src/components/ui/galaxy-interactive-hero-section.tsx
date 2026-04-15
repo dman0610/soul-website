@@ -70,6 +70,15 @@ function SoulWordmark() {
   );
 }
 
+function smoothScrollTo(e: React.MouseEvent<HTMLAnchorElement>, href: string) {
+  const id = href.replace('#', '');
+  const el = document.getElementById(id);
+  if (el) {
+    e.preventDefault();
+    el.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
 function SoulNavbar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -117,7 +126,7 @@ function SoulNavbar() {
             { label: 'How It Works', href: '#how-it-works' },
             { label: 'Pricing', href: '#pricing' },
           ].map(({ label, href }) => (
-            <a key={href} href={href} style={{
+            <a key={href} href={href} onClick={e => smoothScrollTo(e, href)} style={{
               fontFamily: 'var(--font-dm-sans)', fontSize: '14px', color: '#8a8a9a',
               textDecoration: 'none', WebkitTapHighlightColor: 'transparent',
               transition: 'color 150ms ease',
@@ -171,8 +180,8 @@ function SoulNavbar() {
         borderTop: isMobileOpen ? '1px solid rgba(255,255,255,0.06)' : 'none',
       }}>
         <div style={{ padding: '16px 24px 20px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <a href="#how-it-works" onClick={() => setIsMobileOpen(false)} style={{ fontFamily: 'var(--font-dm-sans)', fontSize: '15px', color: '#8a8a9a', textDecoration: 'none', minHeight: '44px', display: 'flex', alignItems: 'center', WebkitTapHighlightColor: 'transparent' }}>How It Works</a>
-          <a href="#pricing" onClick={() => setIsMobileOpen(false)} style={{ fontFamily: 'var(--font-dm-sans)', fontSize: '15px', color: '#8a8a9a', textDecoration: 'none', minHeight: '44px', display: 'flex', alignItems: 'center', WebkitTapHighlightColor: 'transparent' }}>Pricing</a>
+          <a href="#how-it-works" onClick={e => { setIsMobileOpen(false); smoothScrollTo(e, '#how-it-works'); }} style={{ fontFamily: 'var(--font-dm-sans)', fontSize: '15px', color: '#8a8a9a', textDecoration: 'none', minHeight: '44px', display: 'flex', alignItems: 'center', WebkitTapHighlightColor: 'transparent' }}>How It Works</a>
+          <a href="#pricing" onClick={e => { setIsMobileOpen(false); smoothScrollTo(e, '#pricing'); }} style={{ fontFamily: 'var(--font-dm-sans)', fontSize: '15px', color: '#8a8a9a', textDecoration: 'none', minHeight: '44px', display: 'flex', alignItems: 'center', WebkitTapHighlightColor: 'transparent' }}>Pricing</a>
           <a href="https://calendly.com/dmanfergie/30min" target="_blank" rel="noopener noreferrer" onClick={() => setIsMobileOpen(false)} style={{ fontFamily: 'var(--font-outfit)', fontWeight: 600, fontSize: '15px', color: '#f5f5f0', textDecoration: 'none', padding: '12px 22px', borderRadius: '100px', background: '#c4620a', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minHeight: '44px', WebkitTapHighlightColor: 'transparent', marginTop: '4px' }}>Book a Free Call</a>
         </div>
       </div>
@@ -187,9 +196,10 @@ export const HeroSection = () => {
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
+    const margin = window.innerWidth < 768 ? '100px' : '400px';
     const observer = new IntersectionObserver(
       ([entry]) => setSplineActive(entry.isIntersecting),
-      { threshold: 0, rootMargin: '400px' }
+      { threshold: 0, rootMargin: margin }
     );
     observer.observe(el);
     return () => observer.disconnect();

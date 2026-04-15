@@ -1,8 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 
-function FloatingPaths({ position }: { position: number }) {
+function FloatingPaths({ position, paused }: { position: number; paused: boolean }) {
   const paths = Array.from({ length: 36 }, (_, i) => ({
     id: i,
     d: `M-${380 - i * 5 * position} -${189 + i * 6}C-${
@@ -35,14 +36,14 @@ function FloatingPaths({ position }: { position: number }) {
             stroke={path.stroke}
             strokeWidth={path.width}
             initial={{ pathLength: 0.3, opacity: 0.5 }}
-            animate={{
+            animate={paused ? { pathLength: 0.3, opacity: 0.5 } : {
               pathLength: 1,
               opacity: [0.3, 0.65, 0.3],
               pathOffset: [0, 1, 0],
             }}
             transition={{
               duration: path.duration,
-              repeat: Number.POSITIVE_INFINITY,
+              repeat: paused ? 0 : Number.POSITIVE_INFINITY,
               ease: "linear",
             }}
           />
@@ -58,9 +59,23 @@ export function BackgroundPaths({
   title?: string;
 }) {
   const words = title.split(" ");
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setVisible(entry.isIntersecting),
+      { threshold: 0 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div
+      ref={sectionRef}
       style={{
         position: "relative",
         minHeight: "100dvh",
@@ -75,8 +90,8 @@ export function BackgroundPaths({
     >
       {/* Animated path layers */}
       <div className="absolute inset-0">
-        <FloatingPaths position={1} />
-        <FloatingPaths position={-1} />
+        <FloatingPaths position={1} paused={!visible} />
+        <FloatingPaths position={-1} paused={!visible} />
       </div>
 
       {/* Top edge fade from hero */}
@@ -242,6 +257,10 @@ export function BackgroundPaths({
             >
               <a
                 href="/#demos"
+                onClick={e => {
+                  const el = document.getElementById('demos');
+                  if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth' }); }
+                }}
                 style={{
                   display: "inline-flex",
                   alignItems: "center",

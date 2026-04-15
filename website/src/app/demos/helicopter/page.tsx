@@ -48,10 +48,6 @@ const styles = `
     0%, 100% { transform: translateY(0); opacity: 0.6; }
     50%       { transform: translateY(8px); opacity: 1; }
   }
-  @keyframes chatPulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(196,98,10,0.5); }
-    50%       { box-shadow: 0 0 0 16px rgba(196,98,10,0); }
-  }
   @keyframes slideInRight {
     from { opacity: 0; transform: translateX(24px); }
     to   { opacity: 1; transform: translateX(0); }
@@ -925,7 +921,6 @@ const styles = `
     transform: scale(1.08);
     box-shadow: 0 12px 40px rgba(196,98,10,0.55);
   }
-  .chat-trigger.pulse { animation: chatPulse 800ms ease; }
   .chat-panel {
     position: fixed;
     bottom: 92px; right: 24px;
@@ -1184,7 +1179,10 @@ const HELI_FAQ = [
 
 function ChatWidget() {
   const [open, setOpen] = useState(false);
-  const [pulsing, setPulsing] = useState(false);
+  const [showBubble, setShowBubble] = useState(false);
+  const [bubbleMsg, setBubbleMsg] = useState("");
+  const engagedRef = useRef(false);
+  const goodbyeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [mode, setMode] = useState<"live" | "faq">("faq");
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -1204,11 +1202,40 @@ function ChatWidget() {
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setPulsing(true);
-      setTimeout(() => setPulsing(false), 800);
-    }, 4000);
-    return () => clearTimeout(timer);
+    const introPrompts = [
+      "Aloha! I'm Leilani — ask me anything about our Maui flights!",
+      "Hi there! I'm Leilani, your tour concierge. I'd love to help you plan something special.",
+      "Aloha! Thinking about a Maui flight? I'm here whenever you're ready.",
+    ];
+    const psstPrompts = ["Psst, over here!", "Ready to fly?", "Ask me anything!"];
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    function add(fn: () => void, ms: number) {
+      const t = setTimeout(fn, ms); timers.push(t);
+    }
+    function schedulePsst() {
+      const delay = 15000 + Math.random() * 15000;
+      add(() => {
+        if (engagedRef.current) return;
+        setBubbleMsg(psstPrompts[Math.floor(Math.random() * psstPrompts.length)]);
+        setShowBubble(true);
+        add(() => {
+          if (engagedRef.current) return;
+          setShowBubble(false);
+          schedulePsst();
+        }, 60000);
+      }, delay);
+    }
+    add(() => {
+      if (engagedRef.current) return;
+      setBubbleMsg(introPrompts[Math.floor(Math.random() * introPrompts.length)]);
+      setShowBubble(true);
+      add(() => {
+        if (engagedRef.current) return;
+        setShowBubble(false);
+        schedulePsst();
+      }, 60000);
+    }, 800);
+    return () => timers.forEach(clearTimeout);
   }, []);
 
   useEffect(() => {
@@ -1244,6 +1271,24 @@ function ChatWidget() {
     }
   }
 
+  function handleClose() {
+    const goodbyes = [
+      "Safe travels!",
+      "Mahalo!",
+      "Happy to help!",
+      "Fly safe!",
+      "Blue skies!",
+      "Come back soon!",
+      "Until next time!",
+      "Aloha!",
+    ];
+    setOpen(false);
+    setBubbleMsg(goodbyes[Math.floor(Math.random() * goodbyes.length)]);
+    setShowBubble(true);
+    if (goodbyeTimerRef.current) clearTimeout(goodbyeTimerRef.current);
+    goodbyeTimerRef.current = setTimeout(() => setShowBubble(false), 10000);
+  }
+
   return (
     <>
       {open && (
@@ -1258,7 +1303,7 @@ function ChatWidget() {
                 {mode === "live" ? "Online now" : "Setting up — quick answers below"}
               </div>
             </div>
-            <button className="chat-close" onClick={() => setOpen(false)} aria-label="Close chat">✕</button>
+            <button className="chat-close" onClick={handleClose} aria-label="Close chat">✕</button>
           </div>
 
           {/* FAQ Mode */}
@@ -1353,9 +1398,55 @@ function ChatWidget() {
           )}
         </div>
       )}
+      {/* Chat bubble hint */}
+      <div
+        aria-live="polite"
+        style={{
+          position: "fixed", bottom: "96px", right: "8px", zIndex: 49,
+          opacity: showBubble ? 1 : 0,
+          transform: showBubble ? "translateY(0) scale(1)" : "translateY(10px) scale(0.97)",
+          transition: "opacity 300ms ease, transform 300ms ease",
+          pointerEvents: showBubble ? "auto" : "none",
+          maxWidth: "240px",
+        }}
+      >
+        <div style={{
+          background: "#1d1820",
+          border: "1px solid rgba(255,255,255,0.10)",
+          borderRadius: "14px 14px 4px 14px",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.55), 0 0 0 1px rgba(196,98,10,0.10)",
+          padding: "10px 28px 10px 14px",
+          position: "relative",
+        }}>
+          <div style={{ fontSize: "10px", fontWeight: 700, color: "#c4620a", marginBottom: "4px", letterSpacing: "0.06em" }}>
+            LEILANI
+          </div>
+          <p style={{ fontSize: "13px", color: "#e8e6e0", lineHeight: 1.5, margin: 0 }}>
+            {bubbleMsg}
+          </p>
+          <button
+            onClick={() => setShowBubble(false)}
+            style={{
+              position: "absolute", top: "6px", right: "8px",
+              background: "none", border: "none", cursor: "pointer",
+              color: "#6a6870", fontSize: "14px", lineHeight: 1,
+              padding: "2px 4px", WebkitTapHighlightColor: "transparent",
+            }}
+            aria-label="Dismiss"
+          >×</button>
+        </div>
+        <div style={{
+          position: "absolute", bottom: "-7px", right: "22px",
+          width: 0, height: 0,
+          borderLeft: "7px solid transparent",
+          borderRight: "3px solid transparent",
+          borderTop: "7px solid #1d1820",
+        }} />
+      </div>
+
       <button
-        className={`chat-trigger${pulsing ? " pulse" : ""}`}
-        onClick={() => setOpen(o => !o)}
+        className="chat-trigger"
+        onClick={() => { engagedRef.current = true; setShowBubble(false); if (goodbyeTimerRef.current) clearTimeout(goodbyeTimerRef.current); if (open) { handleClose(); } else { setOpen(true); } }}
         aria-label={open ? "Close chat" : "Chat with us"}
       >
         {open ? (

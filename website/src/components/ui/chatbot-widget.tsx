@@ -114,12 +114,9 @@ export function ChatbotWidget({ endpoint = '/api/chat/soul' }: ChatbotWidgetProp
   const [isLoading, setIsLoading] = useState(false);
   const [pulsed, setPulsed] = useState(false);
   const [pulseNow, setPulseNow] = useState(false);
-  const [sparked, setSparked] = useState(false);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const sparkTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const sparkOff = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Check API status on mount — upgrade to live if Claude API key is configured
   useEffect(() => {
@@ -140,23 +137,6 @@ export function ChatbotWidget({ endpoint = '/api/chat/soul' }: ChatbotWidgetProp
     return () => clearTimeout(t);
   }, [pulsed, isOpen]);
 
-  // Spark: 1 second after panel opens, flash for 800ms
-  useEffect(() => {
-    if (isOpen) {
-      sparkTimer.current = setTimeout(() => {
-        setSparked(true);
-        sparkOff.current = setTimeout(() => setSparked(false), 800);
-      }, 1000);
-    } else {
-      if (sparkTimer.current) clearTimeout(sparkTimer.current);
-      if (sparkOff.current) clearTimeout(sparkOff.current);
-      setSparked(false);
-    }
-    return () => {
-      if (sparkTimer.current) clearTimeout(sparkTimer.current);
-      if (sparkOff.current) clearTimeout(sparkOff.current);
-    };
-  }, [isOpen]);
 
   // Auto-scroll messages
   useEffect(() => {
@@ -233,21 +213,6 @@ export function ChatbotWidget({ endpoint = '/api/chat/soul' }: ChatbotWidgetProp
             animation: 'chatSlideIn 300ms ease both',
           }}
         >
-          {/* Spark overlay — fires 1s after open */}
-          {sparked && (
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                borderRadius: '20px',
-                background: 'radial-gradient(ellipse at 65% 15%, rgba(255,200,80,0.18) 0%, rgba(196,98,10,0.12) 35%, transparent 65%)',
-                animation: 'chatSpark 800ms ease both',
-                pointerEvents: 'none',
-                zIndex: 10,
-              }}
-            />
-          )}
-
           {/* Header */}
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -441,6 +406,8 @@ export function ChatbotWidget({ endpoint = '/api/chat/soul' }: ChatbotWidgetProp
           width: '56px', height: '56px', borderRadius: '50%',
           border: 'none', cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: isOpen ? '#141828' : 'transparent',
+          boxShadow: isOpen ? 'none' : undefined,
           WebkitTapHighlightColor: 'transparent',
           transition: 'transform 200ms ease',
         }}

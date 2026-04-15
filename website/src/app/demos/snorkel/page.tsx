@@ -19,10 +19,6 @@ const lightRayCSS = `
     from { opacity: 0; transform: translateY(22px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-  @keyframes chatPulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(42,152,152,0.5); }
-    50%       { box-shadow: 0 0 0 14px rgba(42,152,152,0); }
-  }
   @keyframes waveFloat {
     0%, 100% { transform: translateY(0px); }
     50%       { transform: translateY(-6px); }
@@ -780,7 +776,10 @@ const SNORKEL_FAQ = [
 
 function ChatWidget() {
   const [open, setOpen] = useState(false);
-  const [pulse, setPulse] = useState(false);
+  const [showBubble, setShowBubble] = useState(false);
+  const [bubbleMsg, setBubbleMsg] = useState("");
+  const engagedRef = useRef(false);
+  const goodbyeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [mode, setMode] = useState<"live" | "faq">("faq");
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -800,9 +799,40 @@ function ChatWidget() {
   }, []);
 
   useEffect(() => {
-    const t = setTimeout(() => setPulse(true), 4000);
-    const t2 = setTimeout(() => setPulse(false), 6500);
-    return () => { clearTimeout(t); clearTimeout(t2); };
+    const introPrompts = [
+      "Aloha! I'm Kai — ask me anything about snorkeling in Maui!",
+      "Hey! I'm Kai, happy to help you find the perfect tour.",
+      "Hi! I'm Kai — whether it's your first time or tenth, I'd love to help.",
+    ];
+    const psstPrompts = ["Psst, over here!", "Dive in, ask me!", "Need any help?"];
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    function add(fn: () => void, ms: number) {
+      const t = setTimeout(fn, ms); timers.push(t);
+    }
+    function schedulePsst() {
+      const delay = 15000 + Math.random() * 15000;
+      add(() => {
+        if (engagedRef.current) return;
+        setBubbleMsg(psstPrompts[Math.floor(Math.random() * psstPrompts.length)]);
+        setShowBubble(true);
+        add(() => {
+          if (engagedRef.current) return;
+          setShowBubble(false);
+          schedulePsst();
+        }, 60000);
+      }, delay);
+    }
+    add(() => {
+      if (engagedRef.current) return;
+      setBubbleMsg(introPrompts[Math.floor(Math.random() * introPrompts.length)]);
+      setShowBubble(true);
+      add(() => {
+        if (engagedRef.current) return;
+        setShowBubble(false);
+        schedulePsst();
+      }, 60000);
+    }, 800);
+    return () => timers.forEach(clearTimeout);
   }, []);
 
   useEffect(() => {
@@ -834,6 +864,24 @@ function ChatWidget() {
     } finally {
       setIsLoading(false);
     }
+  }
+
+  function handleClose() {
+    const goodbyes = [
+      "Mahalo!",
+      "Aloha!",
+      "Happy to help!",
+      "See you out there!",
+      "Dive in anytime!",
+      "Catch you later!",
+      "Until next time!",
+      "Safe travels!",
+    ];
+    setOpen(false);
+    setBubbleMsg(goodbyes[Math.floor(Math.random() * goodbyes.length)]);
+    setShowBubble(true);
+    if (goodbyeTimerRef.current) clearTimeout(goodbyeTimerRef.current);
+    goodbyeTimerRef.current = setTimeout(() => setShowBubble(false), 10000);
   }
 
   return (
@@ -874,7 +922,7 @@ function ChatWidget() {
                 </div>
               </div>
             </div>
-            <button onClick={() => setOpen(false)} aria-label="Close chat" style={{
+            <button onClick={handleClose} aria-label="Close chat" style={{
               background: "none", border: "none", cursor: "pointer", color: "#8a9aaa",
               padding: "6px", borderRadius: "6px", WebkitTapHighlightColor: "transparent",
               minWidth: "32px", minHeight: "32px", display: "flex", alignItems: "center", justifyContent: "center",
@@ -992,9 +1040,55 @@ function ChatWidget() {
         </div>
       )}
 
+      {/* Chat bubble hint */}
+      <div
+        aria-live="polite"
+        style={{
+          position: "fixed", bottom: "96px", right: "8px", zIndex: 49,
+          opacity: showBubble ? 1 : 0,
+          transform: showBubble ? "translateY(0) scale(1)" : "translateY(10px) scale(0.97)",
+          transition: "opacity 300ms ease, transform 300ms ease",
+          pointerEvents: showBubble ? "auto" : "none",
+          maxWidth: "240px",
+        }}
+      >
+        <div style={{
+          background: "#0d1e1e",
+          border: "1px solid rgba(42,152,152,0.20)",
+          borderRadius: "14px 14px 4px 14px",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.55), 0 0 0 1px rgba(42,152,152,0.08)",
+          padding: "10px 28px 10px 14px",
+          position: "relative",
+        }}>
+          <div style={{ fontSize: "10px", fontWeight: 700, color: "#2a9898", marginBottom: "4px", letterSpacing: "0.06em" }}>
+            KAI
+          </div>
+          <p style={{ fontSize: "13px", color: "#e8e6e0", lineHeight: 1.5, margin: 0 }}>
+            {bubbleMsg}
+          </p>
+          <button
+            onClick={() => setShowBubble(false)}
+            style={{
+              position: "absolute", top: "6px", right: "8px",
+              background: "none", border: "none", cursor: "pointer",
+              color: "#6a8080", fontSize: "14px", lineHeight: 1,
+              padding: "2px 4px", WebkitTapHighlightColor: "transparent",
+            }}
+            aria-label="Dismiss"
+          >×</button>
+        </div>
+        <div style={{
+          position: "absolute", bottom: "-7px", right: "22px",
+          width: 0, height: 0,
+          borderLeft: "7px solid transparent",
+          borderRight: "3px solid transparent",
+          borderTop: "7px solid #0d1e1e",
+        }} />
+      </div>
+
       {/* Trigger button */}
       <button
-        onClick={() => setOpen(v => !v)}
+        onClick={() => { engagedRef.current = true; setShowBubble(false); if (goodbyeTimerRef.current) clearTimeout(goodbyeTimerRef.current); if (open) { handleClose(); } else { setOpen(true); } }}
         aria-label={open ? "Close chat" : "Open chat"}
         style={{
           position: "fixed", bottom: "24px", right: "24px", zIndex: 50,
@@ -1003,7 +1097,7 @@ function ChatWidget() {
           border: "none", cursor: "pointer",
           display: "flex", alignItems: "center", justifyContent: "center",
           boxShadow: "0 4px 20px rgba(42,152,152,0.45)",
-          animation: pulse ? "chatPulse 0.9s ease 2" : "none",
+
           WebkitTapHighlightColor: "transparent",
           transition: "transform 200ms ease, box-shadow 200ms ease",
         }}

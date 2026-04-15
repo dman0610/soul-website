@@ -516,7 +516,7 @@ function DemoShowcaseSection() {
                       border: `1px solid ${demo.accentBorder}`,
                       display: 'flex', alignItems: 'center', gap: '5px',
                     }}>
-                      <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: demo.accent, display: 'inline-block', animation: 'chatPulse 2s ease infinite' }} />
+                      <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: demo.accent, display: 'inline-block', animation: 'liveDotPulse 2s ease-in-out infinite', willChange: 'transform, opacity' }} />
                       <span style={{ fontFamily: 'var(--font-dm-sans)', fontSize: '10.5px', color: demo.accent, fontWeight: 500 }}>
                         Live
                       </span>
@@ -921,7 +921,7 @@ function CTAFooter() {
           padding: '4px 13px', borderRadius: '100px', marginBottom: '24px',
           border: '1px solid rgba(196,98,10,0.22)', background: 'rgba(196,98,10,0.06)',
         }}>
-          <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#c4620a', display: 'inline-block', animation: 'chatPulse 2s ease infinite' }} />
+          <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#c4620a', display: 'inline-block', animation: 'liveDotPulse 2s ease-in-out infinite', willChange: 'transform, opacity' }} />
           <span style={{ fontSize: '11.5px', color: '#e08820', letterSpacing: '0.08em', fontFamily: 'var(--font-dm-sans)', fontWeight: 500 }}>
             Free call · No obligation
           </span>
